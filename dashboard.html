@@ -768,35 +768,7 @@
                 </li>
                 <li class="nav-item" onclick="showPage('rastreabilidade', event)">
                     <i class="fas fa-route"></i>
-                    <span class="nav-label">Rastreabilidade</span></div>
-<!-- Fim da página Programação -->
-<!-- Plano de Frota -->
-<div class="page" id="page-plano_frota">
-    <div class="page-header">
-        <h1>🚆 Plano de Frota</h1>
-        <p>Visualização do plano de frota do VLT Carioca</p>
-    </div>
-    <div style="margin-bottom: 20px;">
-        <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vTe1CnKo3StuV2ajHM7_MxXdVvcySPxsFPb93QOlwRoxh961iuNiieETY4HpJVSDKTm1o4qNjC5tJSH/pubhtml?gid=1380669578&single=true" target="_blank" class="btn-primary">
-            <i class="fas fa-table"></i> Acessar Planilha
-        </a>
-        <button class="btn-primary" onclick="takePageScreenshot('plano_frota')" style="margin-left: 10px;">
-            <i class="fas fa-camera"></i> Capturar Tela
-        </button>
-    </div>
-    <div class="table-container" style="min-height: 650px;">
-        <div class="loading-overlay" id="loading-plano_frota">
-            <div class="spinner"></div>
-        </div>
-        <iframe 
-            src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTe1CnKo3StuV2ajHM7_MxXdVvcySPxsFPb93QOlwRoxh961iuNiieETY4HpJVSDKTm1o4qNjC5tJSH/pubhtml?gid=1380669578&single=true" 
-            frameborder="0" 
-            style="border: 0; width: 100%; height: 650px;" 
-            onload="document.getElementById('loading-plano_frota').classList.add('hidden')"
-            allowfullscreen
-        ></iframe>
-    </div>
-</div>
+                    <span class="nav-label">Rastreabilidade</span>
                 </li>
                 <li class="nav-item" onclick="showPage('documentacao', event)">
                     <i class="fas fa-book"></i>
@@ -810,10 +782,6 @@
 <li class="nav-item" onclick="showPage('programacao', event)">
     <i class="fas fa-calendar-alt"></i>
     <span class="nav-label">Programação</span>
-</li>
-<li class="nav-item" onclick="showPage('plano_frota', event)">
-    <i class="fas fa-train"></i>
-    <span class="nav-label">Plano de Frota</span>
 </li>
                 <li class="nav-item" onclick="showPage('sobre', event)">
                     <i class="fas fa-info-circle"></i>
@@ -1594,21 +1562,20 @@ function loadUserProfile(usuario) {
         if (event && event.currentTarget) {
             event.currentTarget.classList.add('active');
         }
-            const titles = { 
-        'dashboard': '📊 Dashboard', 
-        'passagem': '📋 Passagem de Serviço', 
-        'novo_registro': '➕ Novo Registro', 
-        'relatorios': '📊 Relatórios', 
-        'usuarios': '👥 Usuários',
-        'laboratorio': '🔬 Laboratório',
-        'eva': '🤖 EVA',
-        'refrigeracao': '❄️ Refrigeração',
-        'rastreabilidade': '	Route',
-        'documentacao': '📒 Documentação',
-        'sobre': 'ℹ️ Sobre o VLT',
-        'suporte': '📞 Suporte',
-        'plano_frota': '🚆 Plano de Frota'
-    };
+        const titles = { 
+            'dashboard': '📊 Dashboard', 
+            'passagem': '📋 Passagem de Serviço', 
+            'novo_registro': '➕ Novo Registro', 
+            'relatorios': '📊 Relatórios', 
+            'usuarios': '👥 Usuários',
+            'laboratorio': '🔬 Laboratório',
+            'eva': '🤖 EVA',
+            'refrigeracao': '❄️ Refrigeração',
+            'rastreabilidade': '	Route',
+            'documentacao': '📒 Documentação',
+            'sobre': 'ℹ️ Sobre o VLT',
+            'suporte': '📞 Suporte'
+        };
         document.getElementById('breadcrumb').textContent = titles[pageName] || pageName;
         updateMotivationalQuote();
         const screenshotBtn = document.getElementById('screenshotBtn');
