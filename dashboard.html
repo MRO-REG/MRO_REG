@@ -759,7 +759,7 @@
                     <span class="nav-label">Laboratório</span>
                 </li>
                  <li class="nav-item" onclick="showPage('page-frota', event)">
-                    <i class="fas fa-train"></i>
+                    <i class="fas fa-train"></i> <!-- Ícone opcional -->
                     <span class="nav-label">🚆Plano de Frota</span>
                 </li>
                 <li class="nav-item" onclick="showPage('eva', event)">
@@ -1094,21 +1094,24 @@
                         </div>
                     </div>
                     <!-- Aba Plano de Frota -->
-<div class="page" id="page-frota">
-    <div class="page-header">
-        <h1>🚆 Plano de Frota</h1>
-        <p>Acesse e visualize o plano de frota em tempo real.</p>
-    </div>
-    <div style="margin-bottom: 20px;">
-        <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vTe1CnKo3StuV2ajHM7_MxXdVvcySPxsFPb93QOlwRoxh961iuNiieETY4HpJVSDKTm1o4qNjC5tJSH/pubhtml?gid=1380669578&single=true" target="_blank" class="btn btn-primary"> <!-- Mantém estilo existente -->
-            Acessar Planilha Original
-        </a>
-    </div>
-    <div class="table-container">
-        <iframe id="frota-iframe" src="" width="100%" height="800px" frameborder="0" style="min-height: 500px;"></iframe>
-    </div>
-</div>
-<!-- /Aba Plano de Frota -->
+                    <div class="page" id="page-frota">
+                        <div class="page-header">
+                            <h1>🚆 Plano de Frota</h1>
+                            <p>Acesse e visualize o plano de frota em tempo real.</p>
+                        </div>
+                        <div style="margin-bottom: 20px;">
+                            <!-- Botão para acessar a planilha original -->
+                            <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vTe1CnKo3StuV2ajHM7_MxXdVvcySPxsFPb93QOlwRoxh961iuNiieETY4HpJVSDKTm1o4qNjC5tJSH/pubhtml?gid=1380669578&single=true" target="_blank" class="btn-primary">
+                                <i class="fas fa-table"></i> Acessar Planilha Original
+                            </a>
+                        </div>
+                        <!-- Container da tabela para manter o estilo -->
+                        <div class="table-container">
+                            <!-- Iframe que será carregado pela função JS -->
+                            <iframe id="frota-iframe" src="" width="100%" height="800px" frameborder="0" style="min-height: 500px;"></iframe>
+                        </div>
+                    </div>
+                    <!-- /Aba Plano de Frota -->
                     <!-- EVA -->
                     <div class="page" id="page-eva">
                         <div class="page-header">
@@ -1521,6 +1524,41 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // FUNÇÃO PARA CARREGAR PERFIL DO USUÁRIO (mantida)
+    // Função para carregar a aba de Frota
+function loadFrotaPage() {
+    console.log("Carregando iframe da Frota...");
+    const iframe = document.getElementById('frota-iframe');
+    // Define o src do iframe para o link da planilha CORRETO
+    iframe.src = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTe1CnKo3StuV2ajHM7_MxXdVvcySPxsFPb93QOlwRoxh961iuNiieETY4HpJVSDKTm1o4qNjC5tJSH/pubhtml?gid=1380669578&single=true';
+}
+
+// Observador para saber quando a aba 'page-frota' se torna ativa
+const frotaPageObserver = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+            const target = mutation.target;
+            // Verifica se a página é 'page-frota' e se agora tem a classe 'active'
+            if (target.id === 'page-frota' && target.classList.contains('active')) {
+                console.log("Aba Frota ativada, carregando iframe...");
+                // Carrega a planilha apenas se o iframe ainda estiver vazio
+                if (!document.getElementById('frota-iframe').src) {
+                     loadFrotaPage(); // Chama a função para carregar
+                }
+            }
+        }
+    });
+});
+
+// Começa a observar a div da aba Frota assim que o DOM estiver carregado
+document.addEventListener('DOMContentLoaded', function() {
+    const frotaPageElement = document.getElementById('page-frota');
+    if (frotaPageElement) {
+        frotaPageObserver.observe(frotaPageElement, { attributes: true, attributeFilter: ['class'] });
+        console.log("Observador para 'page-frota' iniciado.");
+    } else {
+        console.warn("Elemento da página 'page-frota' não encontrado para observar mudanças.");
+    }
+});
     // FUNÇÃO PARA CARREGAR PERFIL DO USUÁRIO (VERSÃO CORRIGIDA)
 // FUNÇÃO PARA CARREGAR PERFIL DO USUÁRIO (VERSÃO FINAL E CORRIGIDA)
 function loadUserProfile(usuario) {
