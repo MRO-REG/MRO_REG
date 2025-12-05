@@ -458,37 +458,58 @@
             loginBtn.disabled = true;
             loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verificando...';
 
-            fetch(`${APPS_SCRIPT_URL}?acao=verificar_login&usuario=${encodeURIComponent(username)}&senha=${encodeURIComponent(password)}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === 'sucesso') {
-                        // Salva dados do usuário no sessionStorage para uso no dashboard
-                        sessionStorage.setItem('vlt_user', JSON.stringify({
-                            usuario: data.usuario,
-                            tipo: data.tipo
-                        }));
-                        
-                        successMsg.textContent = '✅ Login bem-sucedido! Redirecionando...';
-                        successMsg.style.display = 'block';
-                        
-                        setTimeout(() => {
-                            window.location.href = 'dashboard.html';
-                        }, 1500);
-                    } else {
-                        errorMsg.textContent = `❌ ${data.mensagem}`;
-                        errorMsg.style.display = 'block';
-                        loginBtn.disabled = false;
-                        loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Entrar no Sistema';
-                    }
-                })
-                .catch(error => {
-                    console.error('Erro de conexão:', error);
-                    errorMsg.textContent = '❌ Erro ao conectar com o servidor. Verifique sua internet e tente novamente.';
-                    errorMsg.style.display = 'block';
-                    loginBtn.disabled = false;
-                    loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Entrar no Sistema';
-                });
-        });
+            document.getElementById('loginForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    const loginBtn = document.getElementById('loginBtn');
+    const errorMsg = document.getElementById('errorMessage');
+    const successMsg = document.getElementById('successMessage');
+
+    errorMsg.style.display = 'none';
+    successMsg.style.display = 'none';
+    loginBtn.disabled = true;
+    loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verificando...';
+
+    fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            acao: 'verificar_login',
+            usuario: username,
+            senha: password
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'sucesso') {
+            sessionStorage.setItem('vlt_user', JSON.stringify({
+                usuario: data.usuario,
+                tipo: data.tipo
+            }));
+            
+            successMsg.textContent = '✅ Login bem-sucedido! Redirecionando...';
+            successMsg.style.display = 'block';
+            
+            setTimeout(() => {
+                window.location.href = 'dashboard.html';
+            }, 1500);
+        } else {
+            errorMsg.textContent = `❌ ${data.mensagem}`;
+            errorMsg.style.display = 'block';
+            loginBtn.disabled = false;
+            loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Entrar no Sistema';
+        }
+    })
+    .catch(error => {
+        console.error('Erro de conexão:', error);
+        errorMsg.textContent = '❌ Erro ao conectar com o servidor. Verifique sua internet e tente novamente.';
+        errorMsg.style.display = 'block';
+        loginBtn.disabled = false;
+        loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Entrar no Sistema';
+    });
+});
 
         function openHelpModal() {
             document.getElementById('helpModal').classList.add('show');
