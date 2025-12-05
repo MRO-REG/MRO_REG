@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MRO - ACESSO</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🚂</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🚂</text></svg>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -157,6 +157,7 @@
             top: 42px;
             color: #7f8c8d;
             transition: color 0.3s ease;
+            pointer-events: none;
         }
 
         .form-group input:focus {
@@ -385,13 +386,13 @@
             <form id="loginForm">
                 <div class="form-group">
                     <label for="username">Usuário</label>
-                    <input type="text" id="username" placeholder="ex: guilherme.juraci" required>
-                    <i class="fas fa-user"></i>
+                    <input type="text" id="username" name="username" autocomplete="username" placeholder="ex: guilherme.juraci" required>
+                    <i class="fas fa-user" aria-hidden="true"></i>
                 </div>
                 <div class="form-group">
                     <label for="password">Senha</label>
-                    <input type="password" id="password" placeholder="Digite sua senha" required>
-                    <i class="fas fa-lock"></i>
+                    <input type="password" id="password" name="password" autocomplete="current-password" placeholder="Digite sua senha" required>
+                    <i class="fas fa-lock" aria-hidden="true"></i>
                 </div>
                 <button type="submit" class="login-btn" id="loginBtn">
                     <i class="fas fa-sign-in-alt"></i> Entrar no Sistema
@@ -441,76 +442,77 @@
     </div>
 
     <script>
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxO12iGpjkXygxSCe9EOPjDFkIlO6HgnDF9yRhswcBP/exec';
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxO12iGpjkXygxSCe9EOPjDFkIlO6HgnDF9yRhswcBP/exec';
 
-document.getElementById('loginForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
-    const loginBtn = document.getElementById('loginBtn');
-    const errorMsg = document.getElementById('errorMessage');
-    const successMsg = document.getElementById('successMessage');
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
 
-    errorMsg.style.display = 'none';
-    successMsg.style.display = 'none';
-    loginBtn.disabled = true;
-    loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verificando...';
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const loginBtn = document.getElementById('loginBtn');
+            const errorMsg = document.getElementById('errorMessage');
+            const successMsg = document.getElementById('successMessage');
 
-    fetch(APPS_SCRIPT_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            acao: 'verificar_login',
-            usuario: username,
-            senha: password
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'sucesso') {
-            sessionStorage.setItem('vlt_user', JSON.stringify({
-                usuario: data.usuario,
-                tipo: data.tipo
-            }));
-            
-            successMsg.textContent = '✅ Login bem-sucedido! Redirecionando...';
-            successMsg.style.display = 'block';
-            
-            setTimeout(() => {
-                window.location.href = 'dashboard.html';
-            }, 1500);
-        } else {
-            errorMsg.textContent = `❌ ${data.mensagem}`;
-            errorMsg.style.display = 'block';
-            loginBtn.disabled = false;
-            loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Entrar no Sistema';
+            errorMsg.style.display = 'none';
+            successMsg.style.display = 'none';
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verificando...';
+
+            fetch(APPS_SCRIPT_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    acao: 'verificar_login',
+                    usuario: username,
+                    senha: password
+                })
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Resposta do servidor não OK');
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === 'sucesso') {
+                    sessionStorage.setItem('vlt_user', JSON.stringify({
+                        usuario: data.usuario,
+                        tipo: data.tipo
+                    }));
+                    
+                    successMsg.textContent = '✅ Login bem-sucedido! Redirecionando...';
+                    successMsg.style.display = 'block';
+                    
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 1500);
+                } else {
+                    errorMsg.textContent = `❌ ${data.mensagem || 'Credenciais inválidas.'}`;
+                    errorMsg.style.display = 'block';
+                }
+            })
+            .catch(error => {
+                console.error('Erro de conexão:', error);
+                errorMsg.textContent = '❌ Erro ao conectar com o servidor. Verifique sua internet e tente novamente.';
+                errorMsg.style.display = 'block';
+            })
+            .finally(() => {
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Entrar no Sistema';
+            });
+        });
+
+        function openHelpModal() {
+            document.getElementById('helpModal').classList.add('show');
         }
-    })
-    .catch(error => {
-        console.error('Erro de conexão:', error);
-        errorMsg.textContent = '❌ Erro ao conectar com o servidor. Verifique sua internet e tente novamente.';
-        errorMsg.style.display = 'block';
-        loginBtn.disabled = false;
-        loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Entrar no Sistema';
-    });
-});
 
-function openHelpModal() {
-    document.getElementById('helpModal').classList.add('show');
-}
+        function closeHelpModal() {
+            document.getElementById('helpModal').classList.remove('show');
+        }
 
-function closeHelpModal() {
-    document.getElementById('helpModal').classList.remove('show');
-}
-
-// Fecha o modal ao clicar fora dele
-document.getElementById('helpModal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        closeHelpModal();
-    }
-});
-</script>
-
+        document.getElementById('helpModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeHelpModal();
+            }
+        });
+    </script>
 </body>
 </html>
