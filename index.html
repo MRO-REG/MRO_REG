@@ -442,77 +442,67 @@
     </div>
 
     <script>
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyiWirafdE-Z8ESMSnBRJ9ZfAB18oAKPr-kB1GTylzMGZnUggmnrVYV6dgsyXcG8E6e3w/exec';
+  // 🔴 COLE AQUI O NOVO URL DE DEPLOY (do passo 1)
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyiWirafdE-Z8ESMSnBRJ9ZfAB18oAKPr-kB1GTylzMGZnUggmnrVYV6dgsyXcG8E6e3w/exec';
 
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
+  document.getElementById('loginForm').addEventListener('submit', function(e) {
+    e.preventDefault();
 
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value;
-            const loginBtn = document.getElementById('loginBtn');
-            const errorMsg = document.getElementById('errorMessage');
-            const successMsg = document.getElementById('successMessage');
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value.trim();
+    const loginBtn = document.getElementById('loginBtn');
+    const errorMsg = document.getElementById('errorMessage');
+    const successMsg = document.getElementById('successMessage');
 
-            errorMsg.style.display = 'none';
-            successMsg.style.display = 'none';
-            loginBtn.disabled = true;
-            loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verificando...';
+    errorMsg.style.display = 'none';
+    successMsg.style.display = 'none';
+    loginBtn.disabled = true;
+    loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verificando...';
 
-            fetch(APPS_SCRIPT_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    acao: 'verificar_login',
-                    usuario: username,
-                    senha: password
-                })
-            })
-            .then(response => {
-                if (!response.ok) throw new Error('Resposta do servidor não OK');
-                return response.json();
-            })
-            .then(data => {
-                if (data.status === 'sucesso') {
-                    sessionStorage.setItem('vlt_user', JSON.stringify({
-                        usuario: data.usuario,
-                        tipo: data.tipo
-                    }));
-                    
-                    successMsg.textContent = '✅ Login bem-sucedido! Redirecionando...';
-                    successMsg.style.display = 'block';
-                    
-                    setTimeout(() => {
-                        window.location.href = 'dashboard.html';
-                    }, 1500);
-                } else {
-                    errorMsg.textContent = `❌ ${data.mensagem || 'Credenciais inválidas.'}`;
-                    errorMsg.style.display = 'block';
-                }
-            })
-            .catch(error => {
-                console.error('Erro de conexão:', error);
-                errorMsg.textContent = '❌ Erro ao conectar com o servidor. Verifique sua internet e tente novamente.';
-                errorMsg.style.display = 'block';
-            })
-            .finally(() => {
-                loginBtn.disabled = false;
-                loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Entrar no Sistema';
-            });
-        });
+    // ✅ Usa GET com query params — compatível com seu doGet()
+    const url = `${APPS_SCRIPT_URL}?acao=verificar_login&usuario=${encodeURIComponent(username)}&senha=${encodeURIComponent(password)}`;
 
-        function openHelpModal() {
-            document.getElementById('helpModal').classList.add('show');
+    fetch(url)
+      .then(response => {
+        if (!response.ok) throw new Error('Erro HTTP: ' + response.status);
+        return response.json();
+      })
+      .then(data => {
+        if (data.status === 'sucesso') {
+          sessionStorage.setItem('vlt_user', JSON.stringify({
+            usuario: data.usuario,
+            tipo: data.tipo
+          }));
+          successMsg.textContent = '✅ Login bem-sucedido! Redirecionando...';
+          successMsg.style.display = 'block';
+          setTimeout(() => window.location.href = 'dashboard.html', 1500);
+        } else {
+          errorMsg.textContent = `❌ ${data.mensagem || 'Credenciais inválidas.'}`;
+          errorMsg.style.display = 'block';
         }
+      })
+      .catch(error => {
+        console.error('Erro:', error);
+        errorMsg.textContent = '❌ Falha na conexão. Verifique sua internet ou entre em contato.';
+        errorMsg.style.display = 'block';
+      })
+      .finally(() => {
+        loginBtn.disabled = false;
+        loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Entrar no Sistema';
+      });
+  });
 
-        function closeHelpModal() {
-            document.getElementById('helpModal').classList.remove('show');
-        }
+  function openHelpModal() {
+    document.getElementById('helpModal').classList.add('show');
+  }
 
-        document.getElementById('helpModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeHelpModal();
-            }
-        });
-    </script>
+  function closeHelpModal() {
+    document.getElementById('helpModal').classList.remove('show');
+  }
+
+  document.getElementById('helpModal').addEventListener('click', function(e) {
+    if (e.target === this) closeHelpModal();
+  });
+</script>
 </body>
 </html>
