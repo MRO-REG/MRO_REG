@@ -441,24 +441,9 @@
     </div>
 
     <script>
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxO12iGpjkXygxSCe9EOPjDFkIlO6HgnDF9yRhswcBP/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxO12iGpjkXygxSCe9EOPjDFkIlO6HgnDF9yRhswcBP/exec';
 
-
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const loginBtn = document.getElementById('loginBtn');
-            const errorMsg = document.getElementById('errorMessage');
-            const successMsg = document.getElementById('successMessage');
-
-            errorMsg.style.display = 'none';
-            successMsg.style.display = 'none';
-            loginBtn.disabled = true;
-            loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verificando...';
-
-            document.getElementById('loginForm').addEventListener('submit', function(e) {
+document.getElementById('loginForm').addEventListener('submit', function(e) {
     e.preventDefault();
     
     const username = document.getElementById('username').value;
@@ -511,20 +496,21 @@
     });
 });
 
-        function openHelpModal() {
-            document.getElementById('helpModal').classList.add('show');
-        }
+function openHelpModal() {
+    document.getElementById('helpModal').classList.add('show');
+}
 
-        function closeHelpModal() {
-            document.getElementById('helpModal').classList.remove('show');
-        }
+function closeHelpModal() {
+    document.getElementById('helpModal').classList.remove('show');
+}
 
-        // Fecha o modal ao clicar fora dele
-        document.getElementById('helpModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeHelpModal();
-            }
-        });
-    </script>
+// Fecha o modal ao clicar fora dele
+document.getElementById('helpModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeHelpModal();
+    }
+});
+</script>
+
 </body>
 </html>
