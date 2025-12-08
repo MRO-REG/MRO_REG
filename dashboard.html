@@ -749,7 +749,7 @@
                     <i class="fas fa-plus-circle"></i>
                     <span class="nav-label">Novo Registro</span>
                 </li>
-        
+
                 <li class="nav-item" onclick="showPage('usuarios', event)" id="usuarios-menu">
                     <i class="fas fa-users"></i>
                     <span class="nav-label">Usuários</span>
@@ -926,33 +926,77 @@
                                 <i class="fas fa-camera"></i> Capturar Tela
                             </button>
                         </div>
-                        <div class="filter-container" id="passagem-filters" style="display: none;">
-                            <input type="date" id="passagemData" class="filter-input" placeholder="Selecione a data">
-                            <select id="passagemGrupo" class="filter-select">
-                                <option value="">Todos Grupos</option>
-                                <option value="GRUPO A">GRUPO A</option>
-                                <option value="GRUPO B">GRUPO B</option>
-                                <option value="GRUPO C">GRUPO C</option>
-                                <option value="GRUPO D">GRUPO D</option>
-                            </select>
-                            <input type="text" id="passagemTrem" class="filter-input" placeholder="Número do Trem">
-                            <input type="text" id="passagemSistema" class="filter-input" placeholder="Sistema">
-                            <input type="text" id="passagemTecnico" class="filter-input" placeholder="Técnico">
-                            <select id="passagemStatus" class="filter-select">
-                                <option value="">Todos Status</option>
-                                <option value="LIBERADO">LIBERADO</option>
-                                <option value="MANUTENÇÃO">MANUTENÇÃO</option>
-                                <option value="AGENDADO">AGENDADO</option>
-                                <option value="COLISÃO">COLISÃO</option>
-                                <option value="PREVENTIVA">PREVENTIVA</option>
-                            </select>
-                            <button class="filter-btn" onclick="applyPassagemFilters()">
-                                <i class="fas fa-filter"></i> Aplicar Filtros
-                            </button>
-                            <button class="filter-btn" onclick="clearPassagemFilters()">
-                                <i class="fas fa-times"></i> Limpar
-                            </button>
-                        </div>
+                        <!-- NOVO CÓDIGO HTML PARA O FILTRO -->
+<div class="filter-container" id="passagem-filters" style="display: flex;">
+    <!-- GRUPO DE BOTÕES DE RÁDIO PARA ESCOLHER O TIPO DE FILTRO DE DATA -->
+    <div style="display: flex; flex-direction: column; gap: 10px; padding: 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--light);">
+        <label style="font-weight: 600; color: var(--dark);">Filtrar por Data:</label>
+        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+            <input type="radio" name="filtroDataOpcao" value="especifica" checked onchange="toggleFiltrosData()">
+            <span>Data Específica</span>
+        </label>
+        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+            <input type="radio" name="filtroDataOpcao" value="periodo" onchange="toggleFiltrosData()">
+            <span>Período (De... Até...)</span>
+        </label>
+        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+            <input type="radio" name="filtroDataOpcao" value="atalho" onchange="toggleFiltrosData()">
+            <span>Atalhos</span>
+        </label>
+    </div>
+
+    <!-- CONTAINER DINÂMICO QUE MOSTRA OS CAMPOS DE FILTRO CORRETOS -->
+    <div id="filtroDataContainer" style="display: flex; gap: 15px; align-items: center;">
+        <!-- OPÇÃO 1: DATA ESPECÍFICA (VISÍVEL POR PADRÃO) -->
+        <div id="filtroEspecifico" class="filtro-data-content">
+            <input type="date" id="passagemDataEspecifica" class="filter-input" placeholder="Selecione a data">
+        </div>
+
+        <!-- OPÇÃO 2: PERÍODO (ESCONDIDO POR PADRÃO) -->
+        <div id="filtroPeriodo" class="filtro-data-content" style="display: none;">
+            <input type="date" id="passagemDataInicio" class="filter-input" placeholder="Data Início">
+            <span>até</span>
+            <input type="date" id="passagemDataFim" class="filter-input" placeholder="Data Fim">
+        </div>
+
+        <!-- OPÇÃO 3: ATALHOS (ESCONDIDO POR PADRÃO) -->
+        <div id="filtroAtalho" class="filtro-data-content" style="display: none;">
+            <select id="passagemAtalho" class="filter-select">
+                <option value="">Selecione um atalho</option>
+                <option value="hoje">Hoje</option>
+                <option value="ontem">Ontem</option>
+                <option value="ultimos_7_dias">Últimos 7 dias</option>
+                <option value="este_mes">Este Mês</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- OUTROS FILTROS (MANTIDOS) -->
+    <select id="passagemGrupo" class="filter-select">
+        <option value="">Todos Grupos</option>
+        <option value="GRUPO A">GRUPO A</option>
+        <option value="GRUPO B">GRUPO B</option>
+        <option value="GRUPO C">GRUPO C</option>
+        <option value="GRUPO D">GRUPO D</option>
+    </select>
+    <input type="text" id="passagemTrem" class="filter-input" placeholder="Número do Trem">
+    <input type="text" id="passagemSistema" class="filter-input" placeholder="Sistema">
+    <input type="text" id="passagemTecnico" class="filter-input" placeholder="Técnico">
+    <select id="passagemStatus" class="filter-select">
+        <option value="">Todos Status</option>
+        <option value="LIBERADO">LIBERADO</option>
+        <option value="MANUTENÇÃO">MANUTENÇÃO</option>
+        <option value="AGENDADO">AGENDADO</option>
+        <option value="COLISÃO">COLISÃO</option>
+        <option value="PREVENTIVA">PREVENTIVA</option>
+    </select>
+    <button class="filter-btn" onclick="applyPassagemFilters()">
+        <i class="fas fa-filter"></i> Aplicar Filtros
+    </button>
+    <button class="filter-btn" onclick="clearPassagemFilters()">
+        <i class="fas fa-times"></i> Limpar
+    </button>
+</div>
                         <div class="table-container">
                             <table>
                                 <thead>
@@ -989,8 +1033,8 @@
                             <div class="loading-overlay" id="loading-novo_registro">
                                 <div class="spinner"></div>
                             </div>
-                            <iframe 
-                                src="https://docs.google.com/forms/d/e/1FAIpQLSdz056J8dsQMPXV6__U2B-VOxQEaNF34bwyaRgFVlcCKOLZ_Q/viewform?embedded=true" 
+                            <iframe
+                                src="https://docs.google.com/forms/d/e/1FAIpQLSdz056J8dsQMPXV6__U2B-VOxQEaNF34bwyaRgFVlcCKOLZ_Q/viewform?embedded=true"
                                 class="form-iframe"
                                 allow="clipboard-read; clipboard-write"
                                 allowfullscreen
@@ -1114,8 +1158,8 @@
                             <div class="loading-overlay" id="loading-laboratorio">
                                 <div class="spinner"></div>
                             </div>
-                            <iframe 
-                                src="https://docs.google.com/forms/d/e/1FAIpQLSeX0zKXBJXX3SyCkJGHufqbEDlTnpRigdZq0TmBqdLmC3woGQ/viewform?embedded=true" 
+                            <iframe
+                                src="https://docs.google.com/forms/d/e/1FAIpQLSeX0zKXBJXX3SyCkJGHufqbEDlTnpRigdZq0TmBqdLmC3woGQ/viewform?embedded=true"
                                 class="form-iframe"
                                 allow="clipboard-read; clipboard-write"
                                 allowfullscreen
@@ -1143,8 +1187,8 @@
                             <div class="loading-overlay" id="loading-eva">
                                 <div class="spinner"></div>
                             </div>
-                            <iframe 
-                                src="https://docs.google.com/forms/d/e/1FAIpQLSeixWIcnMdFmqHnxwO-vb2F86AKW6g6KRqDwMsYTk3Baj6l8w/viewform?embedded=true" 
+                            <iframe
+                                src="https://docs.google.com/forms/d/e/1FAIpQLSeixWIcnMdFmqHnxwO-vb2F86AKW6g6KRqDwMsYTk3Baj6l8w/viewform?embedded=true"
                                 class="form-iframe"
                                 allow="clipboard-read; clipboard-write"
                                 allowfullscreen
@@ -1172,8 +1216,8 @@
                             <div class="loading-overlay" id="loading-refrigeracao">
                                 <div class="spinner"></div>
                             </div>
-                            <iframe 
-                                src="https://docs.google.com/forms/d/e/1FAIpQLSekQ4e_rCSuzitRhtpjq48VR2ttobQvvRr--e0qcTH5PU9azQ/viewform?embedded=true" 
+                            <iframe
+                                src="https://docs.google.com/forms/d/e/1FAIpQLSekQ4e_rCSuzitRhtpjq48VR2ttobQvvRr--e0qcTH5PU9azQ/viewform?embedded=true"
                                 class="form-iframe"
                                 allow="clipboard-read; clipboard-write"
                                 allowfullscreen
@@ -1201,8 +1245,8 @@
                             <div class="loading-overlay" id="loading-rastreabilidade">
                                 <div class="spinner"></div>
                             </div>
-                            <iframe 
-                                src="https://docs.google.com/forms/d/e/1FAIpQLSciTNSHCOzWsFK0GBQv-GKTqgb5WtijzfaG4azAMyIvcU0Vnw/viewform?embedded=true" 
+                            <iframe
+                                src="https://docs.google.com/forms/d/e/1FAIpQLSciTNSHCOzWsFK0GBQv-GKTqgb5WtijzfaG4azAMyIvcU0Vnw/viewform?embedded=true"
                                 class="form-iframe"
                                 allow="clipboard-read; clipboard-write"
                                 allowfullscreen
@@ -1321,7 +1365,7 @@
                             </div>
                         </div>
                     </div>
-                
+
                 <!-- Cole esta página inteira dentro da <div class="pages-wrapper"> -->
 <!-- Programação -->
 <div class="page" id="page-programacao">
@@ -1341,10 +1385,10 @@
         <div class="loading-overlay" id="loading-programacao">
             <div class="spinner"></div>
         </div>
-        <iframe 
-            src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTI602SZCvv3Vljbau78ZXFxNxUVQATWF1aefTd0rxh6zXpmhV9nDjmpimnDO5vkHLKpWZl82Kw4Gu2/pubhtml?gid=1888450540&single=true" 
-            frameborder="0" 
-            style="border: 0; width: 100%; height: 650px;" 
+        <iframe
+            src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTI602SZCvv3Vljbau78ZXFxNxUVQATWF1aefTd0rxh6zXpmhV9nDjmpimnDO5vkHLKpWZl82Kw4Gu2/pubhtml?gid=1888450540&single=true"
+            frameborder="0"
+            style="border: 0; width: 100%; height: 650px;"
             onload="document.getElementById('loading-programacao').classList.add('hidden')"
             allowfullscreen
         ></iframe>
@@ -1475,7 +1519,7 @@
         </div>
     </div>
     <script>
-        
+
     // VARIÁVEIS GLOBAIS
     let currentUser = null;
     let allRegistros = [];
@@ -1488,16 +1532,16 @@
 function checkAuth() {
     // 1. Pega os dados do usuário salvos no sessionStorage pelo login
     const userData = sessionStorage.getItem('vlt_user');
-    
+
     // 2. Verifica se os dados existem. Se não, redireciona para o login.
     if (!userData) {
         window.location.href = 'index.html';
         return null; // Retorna null para indicar que não há usuário
     }
-    
+
     // 3. Converte os dados de string para objeto
     const user = JSON.parse(userData);
-    
+
     // 4. Retorna o objeto do usuário para ser usado no dashboard
     return user;
 }
@@ -1556,10 +1600,10 @@ function loadUserProfile(usuario) {
             const rows = parseCSV(csv);
             // Procura pelo usuário na coluna 'Usuário' da planilha
             const userRow = rows.find(r => r.Usuário === usuario || r.Usuario === usuario);
-            
+
             if (userRow) {
                 console.log("Dados do usuário encontrados na planilha:", userRow);
-                
+
                 // Extrai os dados da planilha usando os nomes de coluna corretos
                 const nomeCompleto = userRow.Nome_Completo || '-';
                 const email = userRow.Email || '-';
@@ -1570,7 +1614,7 @@ function loadUserProfile(usuario) {
 
                 // Cria o link do WhatsApp se o telefone existir
                 const whatsappLink = telefone ? `<a href="https://wa.me/55${telefone.replace(/\D/g, '')}" target="_blank" class="modal-link"><i class="fab fa-whatsapp"></i> Clique para conversar</a>` : 'Não informado';
-                
+
                 // Preenche o modal "Meu Perfil" com os dados da planilha
                 document.getElementById('perfil-nome').textContent = nomeCompleto;
                 document.getElementById('perfil-usuario').textContent = usuario;
@@ -1616,7 +1660,7 @@ function loadUserProfile(usuario) {
         } else {
             console.error("❌ Página não encontrada:", pageName);
         }
-        
+
         document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
         if (event && event.currentTarget) {
             event.currentTarget.classList.add('active');
@@ -1641,9 +1685,9 @@ function loadUserProfile(usuario) {
         document.getElementById('breadcrumb').textContent = titles[pageName] || pageName;
         updateMotivationalQuote();
         const screenshotBtn = document.getElementById('screenshotBtn');
-        if (['documentacao', 'sobre', 'catalogo'].includes(pageName)) { 
+        if (['documentacao', 'sobre', 'catalogo'].includes(pageName)) {
         } else {
-            screenshotBtn.style.display = 'none'; 
+            screenshotBtn.style.display = 'none';
         }
         if (pageName === 'passagem') {
             document.getElementById('passagem-filters').style.display = 'flex';
@@ -1665,8 +1709,8 @@ function loadUserProfile(usuario) {
     // Função para capturar tela
     function takePassagemScreenshot() {
         const element = document.getElementById('page-passagem');
-        html2canvas(element, { 
-            allowTaint: true, 
+        html2canvas(element, {
+            allowTaint: true,
             useCORS: true,
             scale: 2,
             backgroundColor: '#ffffff'
@@ -1681,22 +1725,22 @@ function loadUserProfile(usuario) {
     }
 
     // Função para abrir o modal antigo de filtro
-    function openPassagemFilterModal() { 
-        document.getElementById('passagemFilterModal').classList.add('show'); 
+    function openPassagemFilterModal() {
+        document.getElementById('passagemFilterModal').classList.add('show');
     }
 
     // Função para fechar o modal antigo de filtro
-    function closePassagemFilterModal() { 
-        document.getElementById('passagemFilterModal').classList.remove('show'); 
+    function closePassagemFilterModal() {
+        document.getElementById('passagemFilterModal').classList.remove('show');
     }
 
     // Função para aplicar filtro do modal antigo
     function applyPassagemFilterOld() {
         const grupo = document.getElementById('passagemGrupoOld').value;
         const dataStr = document.getElementById('passagemDataOld').value;
-        if (!dataStr) { 
-            alert('Por favor, selecione uma data.'); 
-            return; 
+        if (!dataStr) {
+            alert('Por favor, selecione uma data.');
+            return;
         }
         document.getElementById('passagemGrupo').value = grupo;
         document.getElementById('passagemData').value = dataStr;
@@ -1704,74 +1748,108 @@ function loadUserProfile(usuario) {
         closePassagemFilterModal();
     }
 
-    // Função principal para aplicar filtros
-    function applyPassagemFilters() {
-        // Verifica se os dados já foram carregados
-        if (allRegistros.length === 0) {
-            // Se não, carrega-os primeiro
-            fetch(REGISTRO_CSV).then(r => r.text()).then(csv => { 
-                allRegistros = parseCSV(csv); 
-                processPassagemFilters(); // Depois de carregar, aplica os filtros
-            }).catch(error => {
-                console.error('Erro ao carregar planilha:', error);
-                // Mostra erro na tabela
-                document.getElementById('passagem-table').innerHTML = `
-                    <tr><td colspan="7" style="text-align:center;padding:40px;color:red;">
-                        ❌ Erro ao carregar dados: ${error.message}
-                    </td></tr>
-                `;
-            });
-        } else {
-            // Se já carregados, aplica os filtros imediatamente
+// FUNÇÃO PRINCIPAL PARA APLICAR OS FILTROS (ATUALIZADA)
+function applyPassagemFilters() {
+    // Verifica se os dados já foram carregados
+    if (allRegistros.length === 0) {
+        fetch(REGISTRO_CSV).then(r => r.text()).then(csv => {
+            allRegistros = parseCSV(csv);
             processPassagemFilters();
-        }
-    }
-
-    // Função para processar os filtros e atualizar a tabela
-    function processPassagemFilters() {
-        const dataSelecionada = document.getElementById('passagemData').value;
-        const grupo = document.getElementById('passagemGrupo').value;
-        const trem = document.getElementById('passagemTrem').value.toLowerCase();
-        const sistema = document.getElementById('passagemSistema').value.toLowerCase();
-        const tecnico = document.getElementById('passagemTecnico').value.toLowerCase();
-        const status = document.getElementById('passagemStatus').value;
-
-        // Filtra os registros
-        filteredPassagemData = allRegistros.filter(r => {
-            try {
-                const dataRegistro = r['Carimbo de data/hora'] || '';
-                // Filtrar por data (se fornecida)
-                if (dataSelecionada) {
-                    const partsFiltro = dataSelecionada.split('-');
-                    const dataFiltroFormatada = `${partsFiltro[2]}/${partsFiltro[1]}/${partsFiltro[0]}`;
-                    const dataRegistroFormatada = dataRegistro.split(' ')[0];
-                    if (dataRegistroFormatada !== dataFiltroFormatada) {
-                        return false;
-                    }
-                }
-                // Filtrar por grupo
-                if (grupo && r['GRUPO'] !== grupo) return false;
-                // Filtrar por trem
-                if (trem && !r['NÚMERO DO TREM'].toLowerCase().includes(trem)) return false;
-                // Filtrar por sistema
-                if (sistema && !r['SISTEMAS'].toLowerCase().includes(sistema)) return false;
-                // Filtrar por técnico
-                if (tecnico && !r['NOME E SOBRENOME'].toLowerCase().includes(tecnico)) return false;
-                // Filtrar por status
-                if (status) { 
-                    const statusRegistro = (r['STATUS ATUAL DO TREM'] || '').toUpperCase();
-                    if (!statusRegistro.includes(status.toUpperCase())) return false; 
-                }
-                return true;
-            } catch (e) { 
-                console.log('❌ Erro no filtro:', e, r); 
-                return false; 
-            }
+        }).catch(error => {
+            console.error('Erro ao carregar planilha:', error);
+            document.getElementById('passagem-table').innerHTML = `<tr><td colspan="7" style="text-align:center;padding:40px;color:red;">❌ Erro ao carregar dados: ${error.message}</td></tr>`;
         });
-
-        // Renderiza a tabela com os resultados filtrados
-        renderPassagemTable();
+    } else {
+        processPassagemFilters();
     }
+}
+
+
+// FUNÇÃO QUE PROCESSA OS FILTROS E ATUALIZA A TABELA (TOTALMENTE REESCRITA)
+function processPassagemFilters() {
+    const opcaoSelecionada = document.querySelector('input[name="filtroDataOpcao"]:checked').value;
+    const grupo = document.getElementById('passagemGrupo').value;
+    const trem = document.getElementById('passagemTrem').value.toLowerCase();
+    const sistema = document.getElementById('passagemSistema').value.toLowerCase();
+    const tecnico = document.getElementById('passagemTecnico').value.toLowerCase();
+    const status = document.getElementById('passagemStatus').value;
+
+    filteredPassagemData = allRegistros.filter(r => {
+        const dataRegistroStr = r['Carimbo de data/hora'] || '';
+        const dataRegistro = parseDateFromCSV(dataRegistroStr); // Converte para objeto Date
+
+        // --- LÓGICA DE FILTRAGEM DE DATA ---
+        let passaNoFiltroDeData = false;
+        const hoje = new Date();
+        hoje.setHours(0, 0, 0, 0); // Zera a hora para comparar apenas datas
+
+        switch (opcaoSelecionada) {
+            case 'especifica':
+                const dataEspecifica = document.getElementById('passagemDataEspecifica').value;
+                if (dataEspecifica) {
+                    const dataFiltro = new Date(dataEspecifica + "T00:00:00");
+                    passaNoFiltroDeData = dataRegistro.toDateString() === dataFiltro.toDateString();
+                } else {
+                    passaNoFiltroDeData = true; // Se não selecionou data, não filtra por data
+                }
+                break;
+
+            case 'periodo':
+                const dataInicioStr = document.getElementById('passagemDataInicio').value;
+                const dataFimStr = document.getElementById('passagemDataFim').value;
+                if (dataInicioStr || dataFimStr) {
+                    const dataInicio = dataInicioStr ? new Date(dataInicioStr + "T00:00:00") : new Date('1900-01-01');
+                    const dataFim = dataFimStr ? new Date(dataFimStr + "T23:59:59") : new Date('2100-12-31');
+                    passaNoFiltroDeData = dataRegistro >= dataInicio && dataRegistro <= dataFim;
+                } else {
+                    passaNoFiltroDeData = true;
+                }
+                break;
+
+            case 'atalho':
+                const atalho = document.getElementById('passagemAtalho').value;
+                if (atalho) {
+                    switch (atalho) {
+                        case 'hoje':
+                            passaNoFiltroDeData = dataRegistro.toDateString() === hoje.toDateString();
+                            break;
+                        case 'ontem':
+                            const ontem = new Date(hoje);
+                            ontem.setDate(ontem.getDate() - 1);
+                            passaNoFiltroDeData = dataRegistro.toDateString() === ontem.toDateString();
+                            break;
+                        case 'ultimos_7_dias':
+                            const seteDiasAtras = new Date(hoje);
+                            seteDiasAtras.setDate(seteDiasAtras.getDate() - 7);
+                            passaNoFiltroDeData = dataRegistro >= seteDiasAtras;
+                            break;
+                        case 'este_mes':
+                            passaNoFiltroDeData = dataRegistro.getMonth() === hoje.getMonth() && dataRegistro.getFullYear() === hoje.getFullYear();
+                            break;
+                    }
+                } else {
+                    passaNoFiltroDeData = true;
+                }
+                break;
+        }
+
+        if (!passaNoFiltroDeData) return false;
+
+        // --- LÓGICA DOS OUTROS FILTROS (MANTIDA) ---
+        if (grupo && r['GRUPO'] !== grupo) return false;
+        if (trem && !r['NÚMERO DO TREM'].toLowerCase().includes(trem)) return false;
+        if (sistema && !r['SISTEMAS'].toLowerCase().includes(sistema)) return false;
+        if (tecnico && !r['NOME E SOBRENOME'].toLowerCase().includes(tecnico)) return false;
+        if (status) {
+            const statusRegistro = (r['STATUS ATUAL DO TREM'] || '').toUpperCase();
+            if (!statusRegistro.includes(status.toUpperCase())) return false;
+        }
+
+        return true;
+    });
+
+    renderPassagemTable();
+}
 
     // Função para renderizar a tabela
     function renderPassagemTable() {
@@ -1800,36 +1878,56 @@ function loadUserProfile(usuario) {
         }
     }
 
-    // Função para limpar os filtros
-    function clearPassagemFilters() {
-        ['passagemData', 'passagemGrupo', 'passagemTrem', 'passagemSistema', 'passagemTecnico', 'passagemStatus'].forEach(id => document.getElementById(id).value = '');
-        filteredPassagemData = [];
-        document.getElementById('passagem-table').innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;">Clique em "Aplicar Filtros" para gerar os dados</td></tr>';
-    }
+// FUNÇÃO PARA LIMPAR OS FILTROS (ATUALIZADA)
+function clearPassagemFilters() {
+    // Reseta os botões de rádio para o padrão
+    document.querySelector('input[name="filtroDataOpcao"][value="especifica"]').checked = true;
+    toggleFiltrosData(); // Mostra o campo de data específica
 
-    // Função para carregar os dados da planilha (chamada quando a página é aberta)
-    function loadPassagemData() { 
-        if (allRegistros.length === 0) { 
-            // Mostra "Carregando..." na tabela
-            document.getElementById('passagem-table').innerHTML = `
-                <tr><td colspan="7" style="text-align:center;padding:40px;" class="loading">
-                    <i class="fas fa-spinner fa-spin"></i> Carregando dados da planilha...
-                </td></tr>
-            `;
-            fetch(REGISTRO_CSV).then(r => r.text()).then(csv => { 
-                allRegistros = parseCSV(csv); 
-                // Após carregar, mostra a mensagem inicial
-                document.getElementById('passagem-table').innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;">Clique em "Aplicar Filtros" para gerar os dados</td></tr>';
-            }).catch(error => {
-                console.error('Erro ao carregar dados:', error);
-                document.getElementById('passagem-table').innerHTML = `
-                    <tr><td colspan="7" style="text-align:center;padding:40px;color:red;">
-                        ❌ Erro ao carregar dados: ${error.message}
-                    </td></tr>
-                `;
-            });
-        } 
+    // Limpa os valores de todos os campos
+    document.getElementById('passagemDataEspecifica').value = '';
+    document.getElementById('passagemDataInicio').value = '';
+    document.getElementById('passagemDataFim').value = '';
+    document.getElementById('passagemAtalho').value = '';
+    document.getElementById('passagemGrupo').value = '';
+    document.getElementById('passagemTrem').value = '';
+    document.getElementById('passagemSistema').value = '';
+    document.getElementById('passagemTecnico').value = '';
+    document.getElementById('passagemStatus').value = '';
+
+    // Limpa os dados filtrados e a tabela
+    filteredPassagemData = [];
+    document.getElementById('passagem-table').innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;">Clique em "Aplicar Filtros" para gerar os dados</td></tr>';
+}
+
+// NOVA FUNÇÃO PARA CONTROLAR A VISIBILIDADE DOS CAMPOS DE FILTRO
+function toggleFiltrosData() {
+    const opcaoSelecionada = document.querySelector('input[name="filtroDataOpcao"]:checked').value;
+    const todosOsFiltros = document.querySelectorAll('.filtro-data-content');
+
+    // Esconde todos os containers de filtro de data primeiro
+    todosOsFiltros.forEach(filtro => filtro.style.display = 'none');
+
+    // Mostra apenas o container selecionado
+    switch (opcaoSelecionada) {
+        case 'especifica':
+            document.getElementById('filtroEspecifico').style.display = 'flex';
+            break;
+        case 'periodo':
+            document.getElementById('filtroPeriodo').style.display = 'flex';
+            break;
+        case 'atalho':
+            document.getElementById('filtroAtalho').style.display = 'flex';
+            break;
     }
+}
+
+// FUNÇÃO AUXILIAR PARA CONVERTER A DATA DO CSV (dd/mm/yyyy) PARA OBJETO DATE
+function parseDateFromCSV(dateStr) {
+    if (!dateStr) return new Date(0); // Retorna data inválida se string vazia
+    const parts = dateStr.split(' ')[0].split('/');
+    return new Date(parts[2], parts[1] - 1, parts[0]);
+}
 
     // FUNÇÃO DE PARSING CSV (mantida)
     function parseCSV(csvText) {
@@ -1871,8 +1969,8 @@ function loadUserProfile(usuario) {
     // FUNÇÕES GERAIS (mantidas)
     function takeScreenshot() {
         const element = document.querySelector('.page.active');
-        html2canvas(element, { 
-            allowTaint: true, 
+        html2canvas(element, {
+            allowTaint: true,
             useCORS: true,
             scale: 2,
             backgroundColor: '#ffffff'
@@ -1887,8 +1985,8 @@ function loadUserProfile(usuario) {
     }
     function takePageScreenshot(pageName) {
         const element = document.getElementById('page-' + pageName);
-        html2canvas(element, { 
-            allowTaint: true, 
+        html2canvas(element, {
+            allowTaint: true,
             useCORS: true,
             scale: 2,
             backgroundColor: '#ffffff'
@@ -1935,23 +2033,29 @@ function loadUserProfile(usuario) {
         const quote = motivationalQuotes[Math.floor(Math.random() * motivationalQuotes.length)];
         document.getElementById('motivational-quote').textContent = quote;
     }
-    function updateOperationClock() {
-        const startDate = new Date('2016-06-06T00:00:00');
-        const now = new Date();
-        const diff = now - startDate;
-        const years = Math.floor(diff / (1000 * 60 * 60 * 24 * 365));
-        const months = Math.floor((diff % (1000 * 60 * 60 * 24 * 365)) / (1000 * 60 * 60 * 24 * 30));
-        const days = Math.floor((diff % (1000 * 60 * 60 * 24 * 30)) / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-        document.getElementById('op-years').textContent = years;
-        document.getElementById('op-months').textContent = months;
-        document.getElementById('op-days').textContent = days;
-        document.getElementById('op-hours').textContent = hours;
-        document.getElementById('op-minutes').textContent = minutes;
-        document.getElementById('op-seconds').textContent = seconds;
-    }
+    // FUNÇÃO QUE ATUALIZA O CRONÔMETRO DE OPERAÇÃO
+function updateOperationClock() {
+    // DATA E HORA EXATAS DO INÍCIO DA OPERAÇÃO COMERCIAL: 05/06/2016 às 12:00
+    const startDate = new Date('2016-06-05T12:00:00');
+    const now = new Date();
+    const diff = now - startDate;
+
+    // Calcula cada unidade de tempo
+    const years = Math.floor(diff / (1000 * 60 * 60 * 24 * 365));
+    const months = Math.floor((diff % (1000 * 60 * 60 * 24 * 365)) / (1000 * 60 * 60 * 24 * 30));
+    const days = Math.floor((diff % (1000 * 60 * 60 * 24 * 30)) / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+    // Atualiza os elementos na tela com os valores calculados
+    document.getElementById('op-years').textContent = years;
+    document.getElementById('op-months').textContent = months;
+    document.getElementById('op-days').textContent = days;
+    document.getElementById('op-hours').textContent = hours;
+    document.getElementById('op-minutes').textContent = minutes;
+    document.getElementById('op-seconds').textContent = seconds;
+}
     function searchStation() {
         const searchTerm = document.getElementById('searchEstacao').value.toLowerCase();
         const resultDiv = document.getElementById('estacao-result');
@@ -2096,8 +2200,8 @@ function loadUserProfile(usuario) {
             })
             .save();
     }
-    function toggleSidebar() { 
-        document.querySelector('.sidebar').classList.toggle('collapsed'); 
+    function toggleSidebar() {
+        document.querySelector('.sidebar').classList.toggle('collapsed');
     }
     function handleIframeLoad(loadingId) {
         console.log("✅ Iframe carregado com sucesso:", loadingId);
@@ -2121,7 +2225,7 @@ function loadUserProfile(usuario) {
                         <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: var(--warning); margin-bottom: 20px;"></i>
                         <h3 style="color: var(--dark); margin-bottom: 10px;">Formulário não disponível no iframe</h3>
                         <p style="color: #666; line-height: 1.5; max-width: 600px;">
-                            Por motivos de segurança, o Google bloqueou a incorporação deste formulário. 
+                            Por motivos de segurança, o Google bloqueou a incorporação deste formulário.
                             Clique no botão abaixo para abrir o formulário em uma nova aba.
                         </p>
                     </div>
@@ -2169,8 +2273,8 @@ function loadUserProfile(usuario) {
             </div>
         `).join('');
     }
-    function viewDocument(filePath) { 
-        window.open(filePath, '_blank'); 
+    function viewDocument(filePath) {
+        window.open(filePath, '_blank');
     }
     function downloadDocument(filePath, fileName) {
         const link = document.createElement('a');
@@ -2195,26 +2299,26 @@ function loadUserProfile(usuario) {
     }
 
     // FRASES MOTIVACIONAIS (mantida)
-    const motivationalQuotes = [ 
-        "💪 Excelência é a jornada, não o destino!", 
-        "🚆 Segurança em primeiro lugar, sempre!", 
-        "🛡️ Proteção é responsabilidade de todos!", 
-        "⚡ Somos o coração ferroviário do Rio!", 
-        "🎯 Precisão e dedicação em cada operação!", 
-        "👥 Juntos fazemos a diferença!", 
-        "🌟 VLT Carioca: Mobilidade com segurança!", 
-        "✅ Qualidade: nosso compromisso!", 
-        "🚀 Inovação todos os dias!", 
-        "❤️ Paixão pelo que fazemos!", 
-        "🏆 Somos os melhores ferroviários!", 
-        "🔧 Manutenção impecável, sempre!", 
-        "⭐ Faça sua parte, sempre com cuidado!", 
-        "💯 100% de comprometimento!", 
-        "🎖️ Orgulho de servir a população!", 
-        "🚇 Conectando vidas, cidades e sonhos!", 
-        "🛡️ Cada detalhe conta para a segurança!", 
-        "👨‍🔧 Profissionalismo em tudo!", 
-        "🌉 VLT: Liderança em mobilidade urbana!", 
+    const motivationalQuotes = [
+        "💪 Excelência é a jornada, não o destino!",
+        "🚆 Segurança em primeiro lugar, sempre!",
+        "🛡️ Proteção é responsabilidade de todos!",
+        "⚡ Somos o coração ferroviário do Rio!",
+        "🎯 Precisão e dedicação em cada operação!",
+        "👥 Juntos fazemos a diferença!",
+        "🌟 VLT Carioca: Mobilidade com segurança!",
+        "✅ Qualidade: nosso compromisso!",
+        "🚀 Inovação todos os dias!",
+        "❤️ Paixão pelo que fazemos!",
+        "🏆 Somos os melhores ferroviários!",
+        "🔧 Manutenção impecável, sempre!",
+        "⭐ Faça sua parte, sempre com cuidado!",
+        "💯 100% de comprometimento!",
+        "🎖️ Orgulho de servir a população!",
+        "🚇 Conectando vidas, cidades e sonhos!",
+        "🛡️ Cada detalhe conta para a segurança!",
+        "👨‍🔧 Profissionalismo em tudo!",
+        "🌉 VLT: Liderança em mobilidade urbana!",
         "💡 Ideias para melhorar a cada dia!",
         "🦺MRO = SEGURANÇA"
     ];
@@ -2229,8 +2333,13 @@ function loadUserProfile(usuario) {
 
     // LISTA DE DOCUMENTOS (mantida)
     const documentosPDF = [
-        { nome: "ECOPACK FALHAS", descricao: "LISTA DE FALHAS DO ECOPACK", arquivo: "PDF/1525MI falhas.pdf", tamanho: "2.4 MB", categoria: "MANUTENÇÃO" },
+        { nome: "CÓDIGO DE FALHAS ECOPACK", descricao: "LISTA DE FALHAS DO ECOPACK", arquivo: "PDF/1525MI falhas.pdf", tamanho: "2.4 MB", categoria: "MANUTENÇÃO" },
         { nome: "Lista IOS", descricao: "LISTA COM IOS E FALHAS", arquivo: "PDF/Lista IOS.pdf", tamanho: "2.1 MB", categoria: "MANUTENÇÃO" },
+        { nome: "APRESENTAÇÃO GERAL DE TREINAMENTO DE MANUTENÇÃO", descricao: "TREINAMENTO", arquivo: "PDF/ESQUEMÁTICO%20GERAL.pdf", tamanho: "2.1 MB", categoria: "MANUTENÇÃO" },
+        { nome: "TREINAMENTO DE HVAC", descricao: "TREINAMENTO DE HVAC", arquivo: "PDF/AR DE SALÃO.pdf", tamanho: "2.1 MB", categoria: "MANUTENÇÃO" },
+        { nome: "ESQUEMÁTICO GERAL", descricao: "TESQUEMÁTICO GERAL", arquivo: "PDF/ESQUEMÁTICO GERAL.pdf", tamanho: "2.1 MB", categoria: "MANUTENÇÃO" },
+        { nome: "PROCEDIMENTO TESTE DE FÁBRICA SAO", descricao: "SAO", arquivo: "PDF/Teste em fabrica.pdf", tamanho: "2.1 MB", categoria: "MANUTENÇÃO" },
+        { nome: "TREINAMENTO AR DE CABINE", descricao: "AR", arquivo: "PDF/ar de cabine.pdf", tamanho: "2.1 MB", categoria: "MANUTENÇÃO" },
     ];
 
     // URLs DOS DADOS (mantida)
@@ -2361,20 +2470,40 @@ function loadUserProfile(usuario) {
             atualizarCalendarioPlantao();
         }
     }
-    document.addEventListener('DOMContentLoaded', function() {
-        const navItemPlantao = document.querySelector('.nav-item[onclick*="plantao"]');
-        if (navItemPlantao) {
-            navItemPlantao.addEventListener('click', function() {
-                setTimeout(() => {
-                    atualizarCalendarioPlantao();
-                    console.log("📅 Calendário do Plantão atualizado!");
-                }, 100);
-            });
+    // BLOCO DE INICIALIZAÇÃO DA PÁGINA (CORRIGIDO E COMPLETO)
+document.addEventListener('DOMContentLoaded', function() {
+    console.log("🚀 Inicializando Dashboard VLT Carioca...");
+
+    // 1. Verifica a autenticação do usuário
+    currentUser = checkAuth();
+    if (currentUser) {
+        console.log("✅ Usuário autenticado:", currentUser.usuario);
+        const usuario = currentUser.usuario;
+        document.getElementById('userName').textContent = usuario;
+        document.getElementById('userRole').textContent = currentUser.tipo;
+        const initials = usuario.split('.').map(n => n[0].toUpperCase()).join('');
+        document.getElementById('userInitials').textContent = initials;
+        if (currentUser.tipo !== 'ADMIN') {
+            document.getElementById('usuarios-menu').style.display = 'none';
         }
-        if (document.getElementById('page-plantao').classList.contains('active')) {
-            atualizarCalendarioPlantao();
-        }
-    });
+        loadUserProfile(usuario);
+    }
+
+    // 2. INICIA O CRONÔMETRO DE OPERAÇÃO
+    updateOperationClock(); // Chama a função uma vez para não começar do zero
+    setInterval(updateOperationClock, 1000); // Repete a função a cada segundo
+
+    // 3. Inicia as outras funcionalidades
+    updateMotivationalQuote();
+    setInterval(updateMotivationalQuote, 30000);
+
+    // 4. Inicia o calendário do plantão se a página já estiver ativa
+    if (document.getElementById('page-plantao').classList.contains('active')) {
+        atualizarCalendarioPlantao();
+    }
+
+    console.log("✅ Dashboard inicializado com sucesso!");
+});
 
     console.log("🎯 JavaScript carregado com sucesso!");
     // Variáveis globais para armazenar os dados carregados
@@ -2385,7 +2514,7 @@ let currentSelectedItem = null;
 // Função para mostrar a aba do catálogo
 function showCatalogoPage() {
     console.log("Carregando aba Catálogo...");
-    
+
     // Verifica se os dados já foram carregados
     if (!baseCadastroData) {
         // Mostra indicador de carregamento
@@ -2395,7 +2524,7 @@ function showCatalogoPage() {
                 <span>Carregando base de materiais...</span>
             </div>
         `;
-        
+
         // Carrega apenas os dados da base de cadastro
         loadBaseCadastroData().then(() => {
             // Após carregar, renderiza os materiais
@@ -2425,7 +2554,7 @@ function loadBaseCadastroData() {
     return new Promise((resolve, reject) => {
         // URL do arquivo no GitHub - substitua USERNAME e REPO pelos seus dados
         const url = 'https://raw.githubusercontent.com/B33m0r3/MRO_REG/main/VT_2025.07_BASECADASTRO.TXT';
-        
+
         fetch(url)
             .then(response => {
                 if (!response.ok) {
@@ -2441,11 +2570,11 @@ function loadBaseCadastroData() {
                     if (!match) {
                         throw new Error("Formato de arquivo inválido");
                     }
-                    
+
                     // Remove o nome do arquivo e extrai apenas o JSON
                     const jsonStr = text.replace(/^\{[^:]+:/, '{').replace(/\}$/, '}');
                     baseCadastroData = JSON.parse(jsonStr);
-                    
+
                     console.log("Dados da base de cadastro carregados:", baseCadastroData);
                     resolve();
                 } catch (parseError) {
@@ -2494,7 +2623,7 @@ function createTreeElement(node) {
     nameSpan.className = 'item-originalname';
     nameSpan.textContent = node.originalname || node.name;
     itemDiv.appendChild(nameSpan);
-    
+
     // Botão para visualizar detalhes
     const viewBtn = document.createElement('button');
     viewBtn.className = 'view-btn';
@@ -2580,7 +2709,7 @@ function showItemDetails(item) {
         <p><strong>Depósito:</strong> ${item.Depósito || 'N/A'}</p>
         <p><strong>Centro:</strong> ${item.Centro || 'N/A'}</p>
     `;
-    
+
     // Aba 'Imagens'
     const images = [item.imageUrl1, item.imageUrl2, item.imageUrl3, item["Image URL"]].filter(url => url);
     const imagesHTML = `
@@ -2682,7 +2811,7 @@ function loadProjectTree() {
         .then(flatData => {
             // 3. Transformar a lista plana em uma estrutura de árvore
             projectTreeData = buildTreeFromFlatData(flatData);
-            
+
             // Limpa o indicador de carregamento
             treeContainer.innerHTML = '';
 
@@ -2794,7 +2923,7 @@ function renderTreeLevel(items, containerElement) {
             itemName.textContent = item.name;
         }
         itemDiv.appendChild(itemName);
-        
+
         li.appendChild(itemDiv);
         ul.appendChild(li);
     });
