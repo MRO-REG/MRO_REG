@@ -1005,6 +1005,7 @@
                                         <th>Técnico</th>
                                         <th>Trem</th>
                                         <th>Sistema</th>
+                                        <th>Título da Falha</th>
                                         <th>Descrição</th>
                                         <th>Status</th>
                                     </tr>
@@ -1853,29 +1854,32 @@ function processPassagemFilters() {
 
     // Função para renderizar a tabela
     function renderPassagemTable() {
-        const table = document.getElementById('passagem-table');
-        if (filteredPassagemData.length === 0) {
-            table.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;">Nenhum registro encontrado para os filtros aplicados.</td></tr>';
-        } else {
-            table.innerHTML = filteredPassagemData.map(r => {
-                const data = r['Carimbo de data/hora'] || '';
-                const nome = r['NOME E SOBRENOME'] || '';
-                const trem = r['NÚMERO DO TREM'] || '';
-                const sistema = r['SISTEMAS'] || '';
-                const descricao = r['DESCRIÇÃO DETALHADA'] || '';
-                const status = r['STATUS ATUAL DO TREM'] || 'NÃO INFORMADO';
-                return `
-                    <tr>
-                        <td>${data}</td>
-                        <td>${nome}</td>
-                        <td>${trem}</td>
-                        <td>${sistema}</td>
-                        <td>${descricao}</td>
-                        <td>${status}</td>
-                    </tr>
-                `;
-            }).join('');
-        }
+    const table = document.getElementById('passagem-table');
+    if (filteredPassagemData.length === 0) {
+        table.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;">Nenhum registro encontrado para os filtros aplicados.</td></tr>';
+    } else {
+        table.innerHTML = filteredPassagemData.map(r => {
+            const data = r['Carimbo de data/hora'] || '';
+            const nome = r['NOME E SOBRENOME'] || '';
+            const trem = r['NÚMERO DO TREM'] || '';
+            const sistema = r['SISTEMAS'] || '';
+            const tituloFalha = r['TITULO DA FALHA'] || ''; // << NOVA VARIÁVEL
+            const descricao = r['DESCRIÇÃO DETALHADA'] || '';
+            const status = r['STATUS ATUAL DO TREM'] || 'NÃO INFORMADO';
+            return `
+                <tr>
+                    <td>${data}</td>
+                    <td>${nome}</td>
+                    <td>${trem}</td>
+                    <td>${sistema}</td>
+                    <td>${tituloFalha}</td> // << NOVA CÉLULA
+                    <td>${descricao}</td>
+                    <td>${status}</td>
+                </tr>
+            `;
+        }).join('');
+    }
+}
     }
 
 // FUNÇÃO PARA LIMPAR OS FILTROS (ATUALIZADA)
@@ -1922,6 +1926,8 @@ function toggleFiltrosData() {
     }
 }
 
+// INÍCIO DO NOVO BLOCO DE LEITURA DE DADOS
+
 // FUNÇÃO AUXILIAR PARA CONVERTER A DATA DO CSV (dd/mm/yyyy) PARA OBJETO DATE
 function parseDateFromCSV(dateStr) {
     if (!dateStr) return new Date(0); // Retorna data inválida se string vazia
@@ -1929,43 +1935,112 @@ function parseDateFromCSV(dateStr) {
     return new Date(parts[2], parts[1] - 1, parts[0]);
 }
 
-    // FUNÇÃO DE PARSING CSV (mantida)
-    function parseCSV(csvText) {
-        const lines = csvText.trim().split('\n');
-        if (lines.length === 0) return [];
-        const headers = parseCSVLine(lines[0]);
-        const rows = [];
-        for (let i = 1; i < lines.length; i++) {
-            if (lines[i].trim() === '') continue;
-            const values = parseCSVLine(lines[i]);
-            const obj = {};
-            headers.forEach((header, idx) => {
-                const cleanHeader = header.trim().replace(/"/g, '');
-                obj[cleanHeader] = values[idx] ? values[idx].trim().replace(/"/g, '') : '';
-            });
-            rows.push(obj);
-        }
-        return rows;
-    }
-    function parseCSVLine(line) {
-        const result = [];
-        let current = '';
-        let inQuotes = false;
-        for (let i = 0; i < line.length; i++) {
-            const char = line[i];
-            if (char === '"') {
-                inQuotes = !inQuotes;
-            } else if (char === ',' && !inQuotes) {
-                result.push(current);
-                current = '';
-            } else {
-                current += char;
-            }
-        }
-        result.push(current);
-        return result;
-    }
+// FUNÇÃO PRINCIPAL PARA FAZER O PARSING DO CSV (VERSÃO CORRIGIDA)
 
+// INÍCIO DO BLOCO DE FUNÇÕES DE LEITURA (VERSÃO ESTÁVEL E RÁPIDA)
+
+// Função auxiliar para juntar linhas quebradas em campos com aspas
+function preProcessCSVLines(csvText) {
+    const rawLines = csvText.split('\n');
+    const processedLines = [];
+    let currentLine = '';
+
+    for (let i = 0; i < rawLines.length; i++) {
+        const line = rawLines[i];
+        currentLine += line;
+
+        // Conta as aspas. Se for um número ímpar, estamos no meio de um campo.
+        const quoteCount = (currentLine.match(/"/g) || []).length;
+        if (quoteCount % 2 === 0) {
+            // Aspas estão balanceadas, esta linha está completa.
+            processedLines.push(currentLine);
+            currentLine = ''; // Reseta para a próxima linha
+        } else {
+            // Aspas não estão balanceadas, a linha continua. Adiciona uma quebra de linha.
+            currentLine += '\n';
+        }
+    }
+    return processedLines;
+}
+
+// Função auxiliar para dividir uma linha já corrigida em colunas
+function parseCSVLine(line) {
+    const result = [];
+    let current = '';
+    let inQuotes = false;
+    for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        const nextChar = line[i + 1];
+
+        // Lida com aspas duplas dentro de um campo (ex: "texto com ""aspas"" aqui")
+        if (char === '"' && nextChar === '"' && inQuotes) {
+            current += '"';
+            i++; // Pula a próxima aspa
+        } else if (char === '"') {
+            inQuotes = !inQuotes;
+        } else if (char === ',' && !inQuotes) {
+            result.push(current.trim());
+            current = '';
+        } else {
+            current += char;
+        }
+    }
+    result.push(current.trim());
+    return result;
+}
+
+// FUNÇÃO PRINCIPAL - Agora mais simples e rápida
+function parseCSV(csvText) {
+    // Etapa 1: Pré-processa o texto para corrigir as quebras de linha
+    const processedLines = preProcessCSVLines(csvText);
+
+    if (processedLines.length === 0) return [];
+
+    // Etapa 2: Lê os cabeçalhos da primeira linha
+    const headers = parseCSVLine(processedLines[0]);
+
+    // Etapa 3: Lê as linhas de dados
+    const rows = [];
+    for (let i = 1; i < processedLines.length; i++) {
+        const line = processedLines[i];
+        if (line.trim() === '') continue; // Pula linhas vazias
+
+        const values = parseCSVLine(line);
+        const obj = {};
+        headers.forEach((header, idx) => {
+            const cleanHeader = header.trim().replace(/"/g, '');
+            // Limpa o valor: remove aspas das extremidades e espaços
+            const value = values[idx] ? values[idx].trim().replace(/^"|"$/g, '') : '';
+            obj[cleanHeader] = value;
+        });
+        rows.push(obj);
+    }
+    return rows;
+}
+
+// FIM DO BLOCO DE FUNÇÕES DE LEITURA
+
+// FUNÇÃO AUXILIAR PARA DIVIDIR UMA LINHA SIMPLES (não será mais usada pela parseCSV principal, mas mantida por segurança)
+function parseCSVLine(line) {
+    const result = [];
+    let current = '';
+    let inQuotes = false;
+    for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        if (char === '"') {
+            inQuotes = !inQuotes;
+        } else if (char === ',' && !inQuotes) {
+            result.push(current);
+            current = '';
+        } else {
+            current += char;
+        }
+    }
+    result.push(current);
+    return result;
+}
+
+// FIM DO NOVO BLOCO DE LEITURA DE DADOS
     // FUNÇÕES GERAIS (mantidas)
     function takeScreenshot() {
         const element = document.querySelector('.page.active');
