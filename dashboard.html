@@ -722,6 +722,35 @@
                 grid-template-columns: 1fr;
             }
         }
+        /* Estilos para o layout de duas colunas do Laboratório */
+.laboratorio-container {
+    display: flex;
+    gap: 20px; /* Espaço entre as colunas */
+    flex-wrap: wrap; /* Permite que as colunas se movam para baixo em telas pequenas */
+}
+
+.laboratorio-col {
+    flex: 1; /* Faz com que cada coluna ocupe a mesma quantidade de espaço */
+    min-width: 300px; /* Largura mínima para cada coluna */
+}
+
+.laboratorio-col h3 {
+    font-size: 18px;
+    color: var(--dark);
+    margin-bottom: 15px;
+    text-align: center;
+    background: var(--light);
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 768px) {
+    .laboratorio-container {
+        flex-direction: column; /* Empilha as colunas verticalmente */
+    }
+}
     </style>
 </head>
 <body>
@@ -1141,7 +1170,7 @@
                             </table>
                         </div>
                     </div>
-                    <!-- Laboratório -->
+                                        <!-- Laboratório -->
                     <div class="page" id="page-laboratorio">
                         <div class="page-header">
                             <h1>🔬 Laboratório</h1>
@@ -1155,19 +1184,46 @@
                                 <i class="fas fa-camera"></i> Capturar Tela
                             </button>
                         </div>
-                        <div class="form-container">
-                            <div class="loading-overlay" id="loading-laboratorio">
-                                <div class="spinner"></div>
+
+                        <!-- NOVO CONTAINER COM DUAS COLUNAS -->
+                        <div class="laboratorio-container">
+                            <!-- COLUNA DA ESQUERDA (FORMULÁRIO EXISTENTE) -->
+                            <div class="laboratorio-col">
+                                <h3>🔎Laboratório</h3>
+                                <div class="form-container">
+                                    <div class="loading-overlay" id="loading-laboratorio-left">
+                                        <div class="spinner"></div>
+                                    </div>
+                                    <iframe
+                                        src="https://docs.google.com/forms/d/e/1FAIpQLSeX0zKXBJXX3SyCkJGHufqbEDlTnpRigdZq0TmBqdLmC3woGQ/viewform?embedded=true"
+                                        class="form-iframe"
+                                        allow="clipboard-read; clipboard-write"
+                                        allowfullscreen
+                                        loading="lazy"
+                                        onload="handleIframeLoad('loading-laboratorio-left')"
+                                        onerror="handleIframeError('page-laboratorio-left', 'https://docs.google.com/forms/d/e/1FAIpQLSeX0zKXBJXX3SyCkJGHufqbEDlTnpRigdZq0TmBqdLmC3woGQ/viewform')"
+                                    ></iframe>
+                                </div>
                             </div>
-                            <iframe
-                                src="https://docs.google.com/forms/d/e/1FAIpQLSeX0zKXBJXX3SyCkJGHufqbEDlTnpRigdZq0TmBqdLmC3woGQ/viewform?embedded=true"
-                                class="form-iframe"
-                                allow="clipboard-read; clipboard-write"
-                                allowfullscreen
-                                loading="lazy"
-                                onload="handleIframeLoad('loading-laboratorio')"
-                                onerror="handleIframeError('page-laboratorio', 'https://docs.google.com/forms/d/e/1FAIpQLSeX0zKXBJXX3SyCkJGHufqbEDlTnpRigdZq0TmBqdLmC3woGQ/viewform')"
-                            ></iframe>
+
+                            <!-- COLUNA DA DIREITA (NOVO FORMULÁRIO) -->
+                            <div class="laboratorio-col">
+                                <h3>📤Envio P/ Laboratório</h3>
+                                <div class="form-container">
+                                    <div class="loading-overlay" id="loading-laboratorio-right">
+                                        <div class="spinner"></div>
+                                    </div>
+                                    <iframe
+                                        src="https://docs.google.com/forms/d/e/1FAIpQLSdNzvP2K4ygPDt4A7eiy9WPobETCN5ilY1qP7q1LzG3yxCv1Q/viewform?embedded=true"
+                                        class="form-iframe"
+                                        allow="clipboard-read; clipboard-write"
+                                        allowfullscreen
+                                        loading="lazy"
+                                        onload="handleIframeLoad('loading-laboratorio-right')"
+                                        onerror="handleIframeError('page-laboratorio-right', 'https://docs.google.com/forms/d/e/1FAIpQLSdNzvP2K4ygPDt4A7eiy9WPobETCN5ilY1qP7q1LzG3yxCv1Q/viewform')"
+                                    ></iframe>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <!-- EVA -->
