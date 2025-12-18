@@ -484,22 +484,13 @@
         .fallback-btn i {
             font-size: 18px;
         }
-                /* Estilos para a aba Catálogo */
+            /* Estilos para a aba Catálogo */
         .catalogo-layout {
-            display: grid;
-            grid-template-columns: 1fr 1fr; /* <-- MUDANÇA CHAVE: Duas colunas (esquerda/direita) */
-            gap: 25px;
-            flex: 1; /* <-- MUDANÇA CHAVE: Faz o layout crescer e ocupar o espaço disponível */
-            min-height: 0; /* Necessário para funcionar bem em todos os navegadores */
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 25px;
+    height: calc(100% - 80px); /* Ajusta para o espaço do header */
         }
-
-        /* Garante que a página Catálogo ocupe toda a altura disponível */
-        #page-catalogo {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
-
         .catalogo-column {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
@@ -508,9 +499,7 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            min-height: 0; /* Permite que o conteúdo interno (a grade) encolha e role */
         }
-
         .column-header {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
@@ -521,14 +510,12 @@
             align-items: center;
             gap: 10px;
         }
-
         .search-container {
             display: flex;
             padding: 15px;
             border-bottom: 1px solid var(--border);
             gap: 10px;
         }
-
         .search-container input {
             flex-grow: 1;
             padding: 10px;
@@ -536,7 +523,6 @@
             border-radius: 6px;
             font-size: 14px;
         }
-
         .search-container button {
             padding: 10px 15px;
             background: var(--danger);
@@ -546,28 +532,23 @@
             cursor: pointer;
             transition: background 0.3s;
         }
-
         .search-container button:hover {
             background: #e74c3c;
         }
-
-        .tree-container {
+        .tree-container, .materiais-grid {
             flex-grow: 1;
             overflow-y: auto;
             padding: 15px;
+        }
+        .tree-container {
             font-size: 14px;
         }
-
         .materiais-grid {
-            flex-grow: 1; /* <-- MUDANÇA CHAVE: Faz a área de resultados crescer */
-            overflow-y: auto; /* <-- MUDANÇA CHAVE: Adiciona a barra de rolagem vertical */
-            padding: 15px;
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 15px;
             align-content: start;
         }
-
         .material-card {
             border: 1px solid var(--border);
             border-radius: 8px;
@@ -576,25 +557,21 @@
             transition: all 0.3s ease;
             background: white;
         }
-
         .material-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 8px 20px rgba(0,0,0,0.1);
             border-color: var(--primary);
         }
-
         .material-card h4 {
             margin: 0 0 10px 0;
             color: var(--dark);
             font-size: 16px;
         }
-
         .material-card p {
             margin: 0;
             color: #555;
             font-size: 13px;
         }
-
         .material-card .material-id {
             font-weight: bold;
             color: var(--primary);
