@@ -487,19 +487,27 @@
             /* Estilos para a aba Catálogo */
         .catalogo-layout {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr; /* <-- CORREÇÃO: Agora são duas colunas */
     gap: 25px;
-    height: calc(100% - 80px); /* Ajusta para o espaço do header */
-        }
+    flex: 1; /* <-- MELHORIA: Usa o espaço disponível de forma flexível */
+    min-height: 0; /* <-- IMPORTANTE: Necessário para o Firefox funcionar bem */
+}
+        /* Garante que a página Catálogo ocupe toda a altura */
+#page-catalogo {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
         .catalogo-column {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Esconde o excesso na coluna */
+    min-height: 0; /* IMPORTANTE: Permite que o filho encolha */
+}
         .column-header {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
@@ -544,11 +552,14 @@
             font-size: 14px;
         }
         .materiais-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 15px;
-            align-content: start;
-        }
+    flex-grow: 1; /* <-- CHAVE: Permite que a grade cresça e ocupe o espaço */
+    overflow-y: auto; /* <-- CHAVE: Ativa a barra de rolagem vertical */
+    padding: 15px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 15px;
+    align-content: start;
+}
         .material-card {
             border: 1px solid var(--border);
             border-radius: 8px;
