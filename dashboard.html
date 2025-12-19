@@ -484,71 +484,81 @@
         .fallback-btn i {
             font-size: 18px;
         }
-            /* Estilos para a aba Catálogo */
-        .catalogo-layout {
+/* Estilos para a aba Catálogo - Versão Corrigida */
+.catalogo-layout {
     display: grid;
     grid-template-columns: 1fr;
     gap: 25px;
-    height: calc(100% - 80px); /* Ajusta para o espaço do header */
-        }
-        .catalogo-column {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-        .column-header {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            padding: 15px 20px;
-            font-size: 18px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .search-container {
-            display: flex;
-            padding: 15px;
-            border-bottom: 1px solid var(--border);
-            gap: 10px;
-        }
-        .search-container input {
-            flex-grow: 1;
-            padding: 10px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            font-size: 14px;
-        }
-        .search-container button {
-            padding: 10px 15px;
-            background: var(--danger);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-        .search-container button:hover {
-            background: #e74c3c;
-        }
-        .tree-container, .materiais-grid {
-            flex-grow: 1;
-            overflow-y: auto;
-            padding: 15px;
-        }
-        .tree-container {
-            font-size: 14px;
-        }
-        .materiais-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 15px;
-            align-content: start;
-        }
+    height: calc(100% - 80px); /* Mantém o ajuste para o espaço do header */
+    overflow: hidden; /* Evita rolagem duplicada */
+}
+
+.catalogo-column {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    height: 100%; /* Faz a coluna ocupar toda a altura disponível */
+}
+
+.column-header {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    padding: 15px 20px;
+    font-size: 18px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0; /* Mantém o header fixo */
+}
+
+.search-container {
+    display: flex;
+    padding: 15px;
+    border-bottom: 1px solid var(--border);
+    gap: 10px;
+    flex-shrink: 0; /* Mantém a barra de busca fixa */
+}
+
+.search-container input {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.search-container button {
+    padding: 10px 15px;
+    background: var(--danger);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.search-container button:hover {
+    background: #e74c3c;
+}
+
+.tree-container, .materiais-grid {
+    flex-grow: 1;
+    overflow-y: auto; /* ADICIONA BARRA DE ROLAGEM VERTICAL */
+    padding: 15px;
+    min-height: 0; /* Importante para permitir a rolagem */
+}
+
+.materiais-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 15px;
+    align-content: start;
+}
         .material-card {
             border: 1px solid var(--border);
             border-radius: 8px;
@@ -818,7 +828,7 @@
 </li>
                 <li class="nav-item" onclick="showPage('sobre', event)">
                     <i class="fas fa-info-circle"></i>
-                    <span class="nav-label">Sobre</span>
+                    <span class="nav-label">Sobre o VLT</span>
                 </li>
                 <li class="nav-item" onclick="openSupportModal()">
                     <i class="fas fa-headset"></i>
@@ -879,7 +889,7 @@
                     <!-- Dashboard -->
                     <div class="page active" id="page-dashboard">
                         <div class="cards-container" id="dashboard-cards"></div>
-                        <div style="width: 100%; height: 1000px; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; position: relative;">
+                        <div style="width: 100%; height: 600px; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; position: relative;">
                             <div class="loading-overlay" id="loading-looker">
                                 <div class="spinner"></div>
                             </div>
@@ -1334,7 +1344,7 @@
                     <!-- Sobre o VLT -->
                     <div class="page" id="page-sobre">
                         <div class="page-header">
-                            <h1>ℹ️ Sobre SIGMA-MRO</h1>
+                            <h1>ℹ️ Sobre</h1>
                             <p>Informações técnicas e mapa da rede</p>
                         </div>
                         <div class="operation-clock">
@@ -1374,97 +1384,53 @@
                                     <p><strong>Inauguração:</strong> 05/06/2016</p>
                                     <p><strong>Op. Comercial:</strong> 06/06/2016</p>
                                 </div>
-                                                            <!-- NOVO CARTÃO DE VALORES MOTIVA -->
-                            <div class="info-card info-card-valores">
-                                <h3>Nossos Princípios e Valores</h3>
-                                <div class="valores-container">
-                                    <!-- Pilar 1: INTEGRIDADE -->
-                                    <div class="valor-pillar" style="border-color: var(--danger);">
-                                        <h4 style="color: var(--danger);">🔴 INTEGRIDADE</h4>
-                                        <p>"Temos compromisso inabalável com a integridade..."</p>
-                                        <ul>
-                                            <li>🛡️ Segurança</li>
-                                            <li>✅ Ética</li>
-                                            <li>💖 Respeito Incondicional</li>
-                                            <li>⚖️ Transparência</li>
-                                        </ul>
-                                    </div>
-                                    <!-- Pilar 2: INTEGRAÇÃO -->
-                                    <div class="valor-pillar" style="border-color: var(--info);">
-                                        <h4 style="color: var(--info);">🔵 INTEGRAÇÃO</h4>
-                                        <p>"...com um time altamente motivado, que age de forma integrada."</p>
-                                        <ul>
-                                            <li>🤝 Colaboração</li>
-                                            <li>💫 Simplicidade</li>
-                                            <li>💡 Iniciativa</li>
-                                        </ul>
-                                    </div>
-                                    <!-- Pilar 3: IMPACTO -->
-                                    <div class="valor-pillar" style="border-color: var(--success);">
-                                        <h4 style="color: var(--success);">🟢 IMPACTO</h4>
-                                        <p>"...e foco em criação de valor sustentável, com impacto positivo em todos à nossa volta."</p>
-                                        <ul>
-                                            <li>🌍 Servir à Sociedade</li>
-                                            <li>✨ Excelência</li>
-                                            <li>🌟 Criar Valor</li>
-                                            <li>🌱 Cuidar da Natureza</li>
-                                            <li>🇧🇷 Valorizar a Brasilidade</li>
-                                        </ul>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>
+<!-- Catálogo -->
+<div class="page" id="page-catalogo">
+    <div class="page-header">
+        <h1>📚 Catálogo de Peças e Componentes</h1>
+        <p>Navegue pela estrutura do VLT Citadis 402 e consulte a base de cadastro de materiais.</p>
+    </div>
+    <div class="catalogo-layout">
+        <!-- Container da Base de Cadastro -->
+        <div class="catalogo-column" id="catalogo-materiais-column">
+            <div class="column-header">
+                <i class="fas fa-database"></i> Base de Cadastro de Materiais
+            </div>
+            <div class="search-container">
+                <input type="text" id="materialSearchInput" placeholder="Buscar material (nome, código, descrição)..." onkeyup="searchMateriais()">
+                <button onclick="clearMaterialSearch()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="materiais-grid" id="materiaisGrid">
+                <div class="loading-spinner">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <span>Carregando materiais...</span>
                 </div>
             </div>
         </div>
-                                        <!-- Catálogo -->
-                    <div class="page" id="page-catalogo">
-                        <div class="page-header">
-                            <h1>📚 Catálogo de Peças e Componentes</h1>
-                            <p>Navegue pela estrutura do VLT Citadis 402 e consulte a base de cadastro de materiais.</p>
-                        </div>
-
-                        <div class="catalogo-layout">
-    <!-- Container da Base de Cadastro -->
-    <div class="catalogo-column" id="catalogo-materiais-column">
-        <div class="column-header">
-            <i class="fas fa-database"></i> Base de Cadastro de Materiais
-        </div>
-        <div class="search-container">
-            <input type="text" id="materialSearchInput" placeholder="Buscar material (nome, código, descrição)..." onkeyup="searchMateriais()">
-            <button onclick="clearMaterialSearch()"><i class="fas fa-times"></i></button>
-        </div>
-        <div class="materiais-grid" id="materiaisGrid">
-             <div class="loading-spinner">
-                <i class="fas fa-spinner fa-spin"></i>
-                <span>Carregando materiais...</span>
+    </div>
+    <!-- Modal para Detalhes do Item -->
+    <div id="itemDetailsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Detalhes do Item</h2>
+                <button class="modal-close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-tabs">
+                    <button class="modal-tab-btn active" onclick="switchModalTab('details' event)">Detalhes</button>
+                    <button class="modal-tab-btn" onclick="switchModalTab('images' event)">Imagens</button>
+                </div>
+                <div id="modalTabContent" class="modal-tab-content">
+                    <!-- O conteúdo será injetado aqui pelo JavaScript -->
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-                        <!-- Modal para Detalhes do Item -->
-                        <div id="itemDetailsModal" class="modal">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h2 id="modalTitle">Detalhes do Item</h2>
-                                    <button class="modal-close-btn" onclick="closeModal()">&times;</button>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="modal-tabs">
-                                        <button class="modal-tab-btn active" onclick="switchModalTab('details')">Detalhes</button>
-                                        <button class="modal-tab-btn" onclick="switchModalTab('images')">Imagens</button>
-                                    </div>
-                                    <div id="modalTabContent" class="modal-tab-content">
-                                        <!-- O conteúdo será injetado aqui pelo JavaScript -->
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                <!-- Cole esta página inteira dentro da <div class="pages-wrapper"> -->
 <!-- Programação -->
 <div class="page" id="page-programacao">
     <div class="page-header">
@@ -2477,7 +2443,7 @@ function updateOperationClock() {
         "⚡ Somos o coração ferroviário do Rio!",
         "🎯 Precisão e dedicação em cada operação!",
         "👥 Juntos fazemos a diferença!",
-        "🌟 VLT Carioca: Mobilidade com segurança!",
+        "🌟 SIGMA-MRO: Mobilidade com segurança!",
         "✅ Qualidade: nosso compromisso!",
         "🚀 Inovação todos os dias!",
         "❤️ Paixão pelo que fazemos!",
@@ -2643,7 +2609,7 @@ function updateOperationClock() {
     }
     // BLOCO DE INICIALIZAÇÃO DA PÁGINA (CORRIGIDO E COMPLETO)
 document.addEventListener('DOMContentLoaded', function() {
-    console.log("🚀 Inicializando Dashboard SIGMA-MRO...");
+    console.log("🚀 Inicializando Dashboard SIGMA.MRO...");
 
     // 1. Verifica a autenticação do usuário
     currentUser = checkAuth();
@@ -2909,13 +2875,41 @@ function showItemDetails(item) {
 
 // Função para mostrar detalhes do material
 function showMaterialDetails(material) {
-    showItemDetails(material);
+    currentSelectedItem = material;
+    const modal = document.getElementById('itemDetailsModal');
+    const title = document.getElementById('modalTitle');
+    title.textContent = material["Texto breve de material"];
+    
+    // Define o conteúdo inicial (aba de detalhes)
+    const content = document.getElementById('modalTabContent');
+    const detailsHTML = `
+        <p><strong>Fabricante:</strong> ${material.fabricanteFornecedor || 'N/A'}</p>
+        <p><strong>Referência Comercial:</strong> ${material.referenciaComercial || 'N/A'}</p>
+        <p><strong>Código SAP:</strong> ${material.Material || 'N/A'}</p>
+        <p><strong>Quantidade:</strong> ${material["Utilização livre"] || 'N/A'}</p>
+        <p><strong>Descrição:</strong> ${material["Texto Longo"] || 'N/A'}</p>
+        <p><strong>Depósito:</strong> ${material.Depósito || 'N/A'}</p>
+        <p><strong>Centro:</strong> ${material.Centro || 'N/A'}</p>
+    `;
+    content.innerHTML = detailsHTML;
+    
+    // Garante que a aba de detalhes esteja ativa
+    document.querySelectorAll('.modal-tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    document.querySelector('.modal-tab-btn:first-child').classList.add('active');
+    
+    modal.classList.add('show');
 }
 
 // Função para fechar o modal
-function closeModal() {
-    document.getElementById('itemDetailsModal').classList.remove('show');
-}
+// Fecha o modal quando clicar fora dele
+window.addEventListener('click', function(event) {
+    const modal = document.getElementById('itemDetailsModal');
+    if (event.target === modal) {
+        closeModal();
+    }
+});
 
 // Funções de busca
 
@@ -3115,7 +3109,81 @@ function toggleNode(liElement, buttonElement, childrenData) {
         buttonElement.textContent = '-';
     }
 }
+// Função para alternar entre abas do modal de detalhes
+function switchModalTab(tabName, event) {
+    document.querySelectorAll('.modal-tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    event.target.classList.add('active');
+    
+    const item = currentSelectedItem;
+    const content = document.getElementById('modalTabContent');
+    
+    if (tabName === 'details' && item) {
+        // Conteúdo da aba de detalhes
+        const detailsHTML = `
+            <p><strong>Fabricante:</strong> ${item.fabricanteFornecedor || 'N/A'}</p>
+            <p><strong>Referência Comercial:</strong> ${item.referenciaComercial || 'N/A'}</p>
+            <p><strong>Código SAP:</strong> ${item.codigoSap || item.Material || 'N/A'}</p>
+            <p><strong>Quantidade:</strong> ${item.qtd || item["Utilização livre"] || 'N/A'}</p>
+            <p><strong>Descrição:</strong> ${item.description || item["Texto Longo"] || 'N/A'}</p>
+            <p><strong>Depósito:</strong> ${item.Depósito || 'N/A'}</p>
+            <p><strong>Centro:</strong> ${item.Centro || 'N/A'}</p>
+        `;
+        content.innerHTML = detailsHTML;
+    } else if (tabName === 'images' && item) {
+        // Conteúdo da aba de imagens
+        const images = [item.imageUrl1, item.imageUrl2, item.imageUrl3, item["Image URL"]].filter(url => url);
+        const imagesHTML = `
+            <div class="image-gallery">
+                ${images.length > 0 ? images.map(url => `<img src="${url}" alt="Imagem do componente" onerror="this.src='https://picsum.photos/seed/error/300/200.jpg'">`).join('') : '<p>Nenhuma imagem disponível.</p>'}
+            </div>
+        `;
+        content.innerHTML = imagesHTML;
+    }
+}
 
+// Função para fechar o modal de detalhes
+function closeModal() {
+    document.getElementById('itemDetailsModal').classList.remove('show');
+}
+
+// Fecha o modal quando clicar fora dele
+window.addEventListener('click', function(event) {
+    const modal = document.getElementById('itemDetailsModal');
+    if (event.target === modal) {
+        closeModal();
+    }
+});
+
+// Função para mostrar detalhes do material
+function showMaterialDetails(material) {
+    currentSelectedItem = material;
+    const modal = document.getElementById('itemDetailsModal');
+    const title = document.getElementById('modalTitle');
+    title.textContent = material["Texto breve de material"];
+    
+    // Define o conteúdo inicial (aba de detalhes)
+    const content = document.getElementById('modalTabContent');
+    const detailsHTML = `
+        <p><strong>Fabricante:</strong> ${material.fabricanteFornecedor || 'N/A'}</p>
+        <p><strong>Referência Comercial:</strong> ${material.referenciaComercial || 'N/A'}</p>
+        <p><strong>Código SAP:</strong> ${material.Material || 'N/A'}</p>
+        <p><strong>Quantidade:</strong> ${material["Utilização livre"] || 'N/A'}</p>
+        <p><strong>Descrição:</strong> ${material["Texto Longo"] || 'N/A'}</p>
+        <p><strong>Depósito:</strong> ${material.Depósito || 'N/A'}</p>
+        <p><strong>Centro:</strong> ${material.Centro || 'N/A'}</p>
+    `;
+    content.innerHTML = detailsHTML;
+    
+    // Garante que a aba de detalhes esteja ativa
+    document.querySelectorAll('.modal-tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    document.querySelector('.modal-tab-btn:first-child').classList.add('active');
+    
+    modal.classList.add('show');
+}
 
 </script>
 </body>
