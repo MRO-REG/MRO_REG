@@ -761,6 +761,7 @@
         flex-direction: column; /* Empilha as colunas verticalmente */
     }
 }
+
     </style>
 </head>
 <body>
@@ -817,6 +818,15 @@
                     <i class="fas fa-book-open"></i>
                     <span class="nav-label">Catálogo</span>
                 </li>
+                <!-- Item de Menu SIGMA-HELP -->
+<!-- SIGMA-HELP (Link Direto) -->
+<li class="nav-item">
+    <!-- O href abre o arquivo que está na sua pasta -->
+    <a href="sigma-help.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; width: 100%; height: 100%;">
+        <i class="fas fa-graduation-cap"></i>
+        <span class="nav-label">SIGMA-HELP</span>
+    </a>
+</li>
                 <!-- Cole este item dentro da <ul class="nav-menu"> -->
 <li class="nav-item" onclick="showPage('programacao', event)">
     <i class="fas fa-calendar-alt"></i>
@@ -920,6 +930,7 @@
         </iframe>
     </div>
 </div>
+
 
                     <!-- Dashboard -->
                     <div class="page active" id="page-dashboard">
@@ -1455,7 +1466,7 @@
             </div>
             <div class="modal-body">
                 <div class="modal-tabs">
-                    <button class="modal-tab-btn active" onclick="switchModalTab('details' event)">Detalhes</button>
+                    <button class="modal-tab-btn active" onclick="switchModalTab('details', event)">Detalhes</button>
                     <button class="modal-tab-btn" onclick="switchModalTab('images' event)">Imagens</button>
                 </div>
                 <div id="modalTabContent" class="modal-tab-content">
@@ -1649,6 +1660,52 @@ function checkAuth() {
     document.addEventListener('DOMContentLoaded', function() {
         console.log("🚀 Inicializando Dashboard SIGMA-MRO...");
         currentUser = checkAuth();
+                // ==========================================
+        // CORREÇÃO DE NAVEGAÇÃO (SIGMA HELP)
+        // ==========================================
+        
+        function checkUrlHash() {
+            // Lê o que está depois do # na URL (ex: #laboratorio)
+            const hash = window.location.hash; 
+            
+            if (hash) {
+                const pageId = hash.replace('#', '');
+                
+                // Verifica se a página existe antes de tentar abrir
+                const targetPage = document.getElementById('page-' + pageId);
+                
+                if (targetPage) {
+                    // Abre a aba chamando a função que já existe no sistema
+                    showPage(pageId, null);
+                    
+                    // Atualiza o título superior para não parecer que recarregou tudo
+                    const breadcrumb = document.getElementById('breadcrumb');
+                    if(breadcrumb) {
+                        const titulos = {
+                            'dashboard': '📊 Dashboard',
+                            'plantao': '🕒 Plantão',
+                            'passagem': '📋 Passagem de Serviço',
+                            'novo_registro': '➕ Novo Registro',
+                            'usuarios': '👥 Usuários',
+                            'laboratorio': '🔬 Laboratório',
+                            'eva': '🤖 EVA',
+                            'refrigeracao': '❄️ Refrigeração',
+                            'rastreabilidade': '🚩 Rastreabilidade',
+                            'documentacao': '📒 Documentação',
+                            'catalogo': '📚 Catálogo',
+                            'programacao': '📅 Programação',
+                            'plano_frota': '🚆 Plano de Frota',
+                            'avisos': '📢 Avisos',
+                            'sobre': 'ℹ️ Sobre o VLT'
+                        };
+                        breadcrumb.innerHTML = titulos[pageId] || '📊 Dashboard';
+                    }
+                }
+            }
+        }
+
+        // Executa a verificação assim que a página termina de carregar
+        checkUrlHash();
         if (currentUser) {
             console.log("✅ Usuário autenticado:", currentUser.usuario);
             const usuario = currentUser.usuario;
