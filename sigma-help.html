@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIGMA-HELP | Capacitação</title>
+    <!-- Ícones e Fontes -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* =========================================
+           VARIÁVEIS (Tema Igual ao Dashboard Principal)
+           ========================================= */
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --accent: #f093fb;
+            --light: #f5f7fa;
+            --dark: #2c3e50;
+            --border: #e0e6ed;
+            --sidebar-width: 280px;
+            --sidebar-width-collapsed: 80px;
+            --gradient-main: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--gradient-main); /* Fundo gradiente igual ao dashboard */
+            position: relative;
+            overflow: hidden; /* Evita rolagem dupla */
+        }
+        
+        /* Padrão de fundo sutil */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/cubes.png');
+            opacity: 0.1;
+            z-index: -1;
+        }
+
+        .container { display: flex; height: 100vh; }
+
+        /* =========================================
+           SIDEBAR (Menu Lateral - Clonado do Dashboard)
+           ========================================= */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            display: flex; flex-direction: column;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+            transition: width 0.3s ease;
+            position: relative;
+            z-index: 100;
+            overflow-y: auto;
+        }
+
+        /* Estado Recolhido */
+        .sidebar.collapsed {
+            width: var(--sidebar-width-collapsed);
+            align-items: center;
+        }
+
+        /* LOGO */
+        .logo {
+            font-size: 22px;
+            font-weight: bold;
+            padding: 30px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            white-space: nowrap;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        .logo i { font-size: 28px; color: var(--primary); }
+        .sidebar.collapsed .logo { padding: 30px 0; justify-content: center; }
+        .sidebar.collapsed .logo span { display: none; }
+
+        /* MENU ITENS */
+        .nav-menu { list-style: none; flex: 1; padding: 0 10px; }
+        .nav-item { margin-bottom: 5px; }
+        
+        /* Link Wrapper */
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            color: rgba(255,255,255,0.7);
+            transition: all 0.2s;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: rgba(102,126,234,0.2);
+            color: white;
+            border-left-color: var(--primary);
+        }
+
+        .nav-link i { width: 20px; text-align: center; font-size: 1.1rem; }
+        .sidebar.collapsed .nav-link { justify-content: center; padding: 12px 0; }
+        .sidebar.collapsed .nav-link span { display: none; }
+        
+        .nav-divider { height: 1px; background: rgba(255,255,255,0.1); margin: 15px 0; }
+
+        /* BOTÃO TOGGLE (Expandir/Recolher) */
+        .toggle-sidebar {
+            position: absolute;
+            top: 30px;
+            right: 15px;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            cursor: pointer;
+            width: 30px; height: 30px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s;
+            z-index: 101; /* Garante que fique por cima */
+        }
+        .toggle-sidebar:hover { background: var(--primary); }
+
+        /* Quando recolhido, move o botão para o centro (opcional) ou apenas gira a seta */
+        .sidebar.collapsed .toggle-sidebar { 
+            transform: rotate(180deg); /* Gira a seta para a direita (>) */
+            right: 25px; /* Ajuste fino para centralizar quando colapso */
+        }
+
+        /* =========================================
+           CONTEÚDO PRINCIPAL (Sigma Help)
+           ========================================= */
+        .main-content {
+            flex: 1;
+            display: flex; flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .top-bar {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px 30px;
+            border-bottom: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .breadcrumb { color: var(--dark); font-weight: 600; font-size: 18px; }
+
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+            background: rgba(255,255,255,0.6); /* Fundo levemente transparente */
+            backdrop-filter: blur(10px);
+        }
+
+        /* Cards de Vídeo */
+        .video-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px;
+            padding-bottom: 50px;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+            border-left: 5px solid var(--secondary);
+        }
+        .card:hover { transform: translateY(-5px); }
+        
+        .card-img { height: 180px; background: #000; position: relative; }
+        .card-img img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; }
+        
+        .card-body { padding: 20px; }
+        .card-tag { 
+            color: var(--primary); font-size: 11px; font-weight: 700; 
+            text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; display: block;
+        }
+        .card-title { color: var(--dark); font-size: 16px; margin-bottom: 15px; font-weight: 600; }
+        
+        .btn-play {
+            width: 100%; padding: 10px;
+            background: var(--gradient-main); color: white; border: none;
+            border-radius: 6px; cursor: pointer; font-weight: 600;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            transition: 0.3s;
+        }
+        .btn-play:hover { opacity: 0.9; }
+
+        /* Busca e Filtros */
+        .filter-container { display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; }
+        .search-input {
+            padding: 10px 15px; border: 1px solid var(--border);
+            border-radius: 6px; width: 300px; outline: none;
+        }
+        .search-input:focus { border-color: var(--primary); }
+
+        .filter-btn {
+            padding: 8px 16px; border: 1px solid var(--border);
+            border-radius: 20px; background: white; cursor: pointer;
+            font-size: 14px; transition: 0.2s;
+        }
+        .filter-btn.active, .filter-btn:hover {
+            background: var(--primary); color: white; border-color: var(--primary);
+        }
+
+        /* Modal Vídeo */
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); z-index: 1000;
+            justify-content: center; align-items: center;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: black; width: 90%; max-width: 900px;
+            border-radius: 10px; overflow: hidden; position: relative;
+            aspect-ratio: 16/9;
+        }
+        .close-modal {
+            position: absolute; top: -40px; right: 0; color: white; font-size: 30px; cursor: pointer;
+        }
+        iframe { width: 100%; height: 100%; border: none; }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <!-- Botão de Expandir/Recolher (Fixado para sempre aparecer) -->
+            <button class="toggle-sidebar" onclick="toggleSidebar()">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+
+            <div class="logo">
+                <i class="fas fa-train"></i>
+                <span>SIGMA-MRO</span>
+            </div>
+
+            <!-- CORRIGIDO: Removida a tag <ul> duplicada que estava quebrando o menu -->
+            <ul class="nav-menu">
+                <!-- Dashboard -->
+                <li class="nav-item">
+                    <a href="dashboard.html#dashboard" class="nav-link">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <!-- Plantão -->
+                <li class="nav-item">
+                    <a href="dashboard.html#plantao" class="nav-link">
+                        <i class="fas fa-clock"></i>
+                        <span>Plantão</span>
+                    </a>
+                </li>
+                <!-- Passagem de Serviço -->
+                <li class="nav-item">
+                    <a href="dashboard.html#passagem" class="nav-link">
+                        <i class="fas fa-clipboard-list"></i>
+                        <span>Passagem de Serviço</span>
+                    </a>
+                </li>
+                <!-- Novo Registro -->
+                <li class="nav-item">
+                    <a href="dashboard.html#novo_registro" class="nav-link">
+                        <i class="fas fa-plus-circle"></i>
+                        <span>Novo Registro</span>
+                    </a>
+                </li>
+
+                <li class="nav-divider"></li>
+
+                <!-- Usuários -->
+                <li class="nav-item">
+                    <a href="dashboard.html#usuarios" class="nav-link">
+                        <i class="fas fa-users"></i>
+                        <span>Usuários</span>
+                    </a>
+                </li>
+                <!-- Laboratório -->
+                <li class="nav-item">
+                    <a href="dashboard.html#laboratorio" class="nav-link">
+                        <i class="fas fa-flask"></i>
+                        <span>Laboratório</span>
+                    </a>
+                </li>
+                <!-- EVA -->
+                <li class="nav-item">
+                    <a href="dashboard.html#eva" class="nav-link">
+                        <i class="fas fa-robot"></i>
+                        <span>EVA</span>
+                    </a>
+                </li>
+                <!-- Refrigeração -->
+                <li class="nav-item">
+                    <a href="dashboard.html#refrigeracao" class="nav-link">
+                        <i class="fas fa-snowflake"></i>
+                        <span>Refrigeração</span>
+                    </a>
+                </li>
+                <!-- Rastreabilidade -->
+                <li class="nav-item">
+                    <a href="dashboard.html#rastreabilidade" class="nav-link">
+                        <i class="fas fa-route"></i>
+                        <span>Rastreabilidade</span>
+                    </a>
+                </li>
+                <!-- Documentação -->
+                <li class="nav-item">
+                    <a href="dashboard.html#documentacao" class="nav-link">
+                        <i class="fas fa-book"></i>
+                        <span>Documentação</span>
+                    </a>
+                </li>
+                <!-- Catálogo -->
+                <li class="nav-item">
+                    <a href="dashboard.html#catalogo" class="nav-link">
+                        <i class="fas fa-book-open"></i>
+                        <span>Catálogo</span>
+                    </a>
+                </li>
+
+                <!-- Sigma Help (Ativo) -->
+                <li class="nav-item">
+                    <a href="sigma-help.html" class="nav-link active">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span>SIGMA-HELP</span>
+                    </a>
+                </li>
+
+                <!-- Programação -->
+                <li class="nav-item">
+                    <a href="dashboard.html#programacao" class="nav-link">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Programação</span>
+                    </a>
+                </li>
+                <!-- Plano de Frota -->
+                <li class="nav-item">
+                    <a href="dashboard.html#plano_frota" class="nav-link">
+                        <i class="fas fa-train"></i>
+                        <span>Plano de Frota</span>
+                    </a>
+                </li>
+                <!-- Avisos -->
+                <li class="nav-item">
+                    <a href="dashboard.html#avisos" class="nav-link">
+                        <i class="fas fa-bullhorn"></i>
+                        <span>Avisos</span>
+                    </a>
+                </li>
+                <!-- Sobre -->
+                <li class="nav-item">
+                    <a href="dashboard.html#sobre" class="nav-link">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Sobre o VLT</span>
+                    </a>
+                </li>
+                <!-- Suporte -->
+                <li class="nav-item">
+                    <a href="#" onclick="window.location.href='dashboard.html'; return false;" class="nav-link">
+                        <i class="fas fa-headset"></i>
+                        <span>Suporte</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- CONTEÚDO -->
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="breadcrumb">SIGMA-HELP / Centro de Capacitação</div>
+                <div style="font-weight: 600; color: var(--secondary);">
+                </div>
+            </header>
+
+            <div class="content-area">
+                <h2 style="margin-bottom: 20px; color: var(--dark);">Guia de Procedimentos</h2>
+                
+                <div class="filter-container">
+                    <input type="text" id="searchInput" class="search-input" placeholder="Buscar vídeo (ex: Relé, Porta)...">
+                    <button class="filter-btn active" onclick="filterVideos('all')">Todos</button>
+                    <button class="filter-btn" onclick="filterVideos('Elétrica')">Elétrica</button>
+                    <button class="filter-btn" onclick="filterVideos('Mecânica')">Mecânica</button>
+                    <button class="filter-btn" onclick="filterVideos('Sistemas')">Sistemas</button>
+                    <button class="filter-btn" onclick="filterVideos('Administrativo')">Administrativo</button>
+                    <button class="filter-btn" onclick="filterVideos('Configuração')">Configuração</button>
+                </div>
+
+                <div class="video-grid" id="gridContainer">
+                    <!-- Vídeos via JS -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL -->
+    <div class="modal" id="videoModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <iframe id="iframeVideo" src="" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <script>
+        // CONFIGURAÇÃO
+        const GOOGLE_SHEETS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTI602SZCvv3Vljbau78ZXFxNxUVQATWF1aefTd0rxh6zXpmhV9nDjmpimnDO5vkHLKpWZl82Kw4Gu2/pub?gid=210452734&single=true&output=csv";
+
+        const grid = document.getElementById('gridContainer');
+        const search = document.getElementById('searchInput');
+        const modal = document.getElementById('videoModal');
+        const modalContent = document.querySelector('.modal-content');
+        let videoData = [];
+
+        // 1. Carregar Dados do Google Sheets
+        async function loadVideos() {
+            try {
+                const response = await fetch(GOOGLE_SHEETS_URL);
+                const data = await response.text();
+                videoData = parseCSV(data);
+                render(videoData);
+            } catch (error) {
+                console.error("Erro:", error);
+                grid.innerHTML = '<p style="color:red; text-align:center;">Erro ao carregar a planilha.</p>';
+            }
+        }
+
+        // 2. Ler CSV
+        function parseCSV(csvText) {
+            const lines = csvText.split('\n').filter(line => line.trim() !== '');
+            const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+            const result = [];
+            for(let i = 1; i < lines.length; i++) {
+                const currentline = lines[i].split(',');
+                if(currentline.length >= 2) { 
+                    let obj = {};
+                    headers.forEach((header, index) => {
+                        let val = currentline[index] ? currentline[index].replace(/^"|"$/g, '').trim() : '';
+                        obj[header] = val;
+                    });
+                    result.push(obj);
+                }
+            }
+            return result;
+        }
+
+        // 3. Renderizar Cards
+        function render(data) {
+            grid.innerHTML = '';
+            if(data.length === 0) { grid.innerHTML = '<p>Nenhum vídeo encontrado.</p>'; return; }
+            
+            data.forEach(v => {
+                const el = document.createElement('div');
+                el.className = 'card';
+                
+                // Lógica para pegar a imagem correta
+                let thumb = v.imagem;
+                if (!thumb) {
+                    // Se for YouTube, pega o thumbnail automaticamente
+                    if (v.url.includes('youtube.com') || v.url.includes('youtu.be')) {
+                        let videoId = '';
+                        if(v.url.includes('embed/')) videoId = v.url.split('embed/')[1];
+                        else if(v.url.includes('watch?v=')) videoId = v.url.split('v=')[1].split('&')[0];
+                        else if(v.url.includes('youtu.be/')) videoId = v.url.split('youtu.be/')[1];
+                        if(videoId) thumb = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+                    } 
+                    // Se for Drive, usa imagem genérica (o Drive não deixa pegar thumbnail fácil via link)
+                    else thumb = `https://picsum.photos/seed/${v.titulo.replace(/\s/g,'')}/400/250`;
+                }
+
+                el.innerHTML = `
+                    <div class="card-img"><img src="${thumb}" alt="Capa"></div>
+                    <div class="card-body">
+                        <span class="card-tag">${v.categoria || 'Geral'}</span>
+                        <div class="card-title">${v.titulo}</div>
+                        <button class="btn-play" onclick="openVideo('${v.url}')">
+                            <i class="fas fa-play"></i> Assistir
+                        </button>
+                    </div>`;
+                grid.appendChild(el);
+            });
+        }
+
+        // 4. Abrir Vídeo (Unificado com IFRAME - Mais estável)
+        function openVideo(url) {
+            modal.classList.add('active');
+            
+            // Limpa modal anterior
+            modalContent.innerHTML = '<span class="close-modal" onclick="closeModal()">&times;</span>';
+
+            let iframe = document.createElement('iframe');
+            iframe.style.width = '100%';
+            iframe.style.height = '100%';
+            iframe.style.border = 'none';
+            iframe.setAttribute('allowfullscreen', 'true');
+
+            // CASO A: YouTube
+            if (url.includes('youtube.com') || url.includes('youtu.be')) {
+                let embedUrl = url;
+                if(url.includes('youtu.be/')) {
+                    const videoId = url.split('youtu.be/')[1];
+                    embedUrl = `https://www.youtube.com/embed/${videoId}`;
+                }
+                else if(url.includes('watch?v=')) {
+                    const videoId = url.split('v=')[1].split('&')[0];
+                    embedUrl = `https://www.youtube.com/embed/${videoId}`;
+                }
+                iframe.src = embedUrl;
+                modalContent.appendChild(iframe);
+            } 
+            
+            // CASO B: Google Drive (Usa o modo Preview)
+            else if (url.includes('drive.google.com/file/d/')) {
+                const id = url.split('/d/')[1].split('/')[0];
+                // O modo /preview é o mais robusto para exibir vídeos do Drive
+                iframe.src = `https://drive.google.com/file/d/${id}/preview`;
+                modalContent.appendChild(iframe);
+            }
+
+            // CASO C: Link direto (MP4) - Fallback
+            else {
+                const video = document.createElement('video');
+                video.src = url;
+                video.controls = true;
+                video.autoplay = true;
+                video.style.width = '100%';
+                video.style.height = '100%';
+                video.style.backgroundColor = 'black';
+                modalContent.appendChild(video);
+            }
+        }
+
+        function closeModal() {
+            modal.classList.remove('active');
+            // Limpa o iframe para parar o som
+            setTimeout(() => { modalContent.innerHTML = ''; }, 300);
+        }
+
+        // Filtros
+        function filterVideos(cat) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            const term = search.value.toLowerCase();
+            const filtered = videoData.filter(v => {
+                const matchCat = cat === 'all' || (v.categoria && v.categoria.toLowerCase() === cat.toLowerCase());
+                const matchTitle = v.titulo && v.titulo.toLowerCase().includes(term);
+                return matchCat && matchTitle;
+            });
+            render(filtered);
+        }
+
+        search.addEventListener('keyup', () => {
+            const activeBtn = document.querySelector('.filter-btn.active');
+            const currentCat = activeBtn.innerText === 'Todos' ? 'all' : activeBtn.innerText;
+            filterVideos(currentCat);
+        });
+
+        modal.addEventListener('click', (e) => { if(e.target === modal) closeModal(); });
+        
+        // Inicia
+        loadVideos();
+        
+        // Toggle
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('collapsed'); }
+    </script>
+</body>
+</html>
