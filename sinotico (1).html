@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sinótico — SIGMA-MRO</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- HLS.js — biblioteca que decodifica stream .m3u8 no browser -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.4.12/hls.min.js"></script>
+    <style>
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --dark: #2c3e50;
+            --danger: #f5576c;
+            --success: #4facfe;
+            --warning: #ffa726;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: linear-gradient(135deg, #0f0c29, #1a1a2e, #16213e);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* ── Cabeçalho ── */
+        .header {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .header-left { display: flex; align-items: center; gap: 14px; }
+        .header-logo { font-size: 28px; }
+        .header-title { font-size: 20px; font-weight: 700; }
+        .header-sub   { font-size: 12px; color: #aaa; margin-top: 2px; }
+
+        /* ── Status badge ── */
+        .status-badge {
+            display: flex; align-items: center; gap: 8px;
+            padding: 8px 16px; border-radius: 20px;
+            font-size: 13px; font-weight: 600;
+            transition: all 0.3s;
+        }
+        .status-badge.connecting { background: rgba(255,167,38,0.2); color: #ffa726; border: 1px solid #ffa726; }
+        .status-badge.live       { background: rgba(79,172,254,0.2); color: #4facfe; border: 1px solid #4facfe; }
+        .status-badge.error      { background: rgba(245,87,108,0.2); color: #f5576c; border: 1px solid #f5576c; }
+
+        .pulse {
+            width: 10px; height: 10px; border-radius: 50%;
+            background: currentColor;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50%       { opacity: 0.4; transform: scale(0.7); }
+        }
+
+        /* ── Container do player ── */
+        .player-wrapper {
+            width: 100%;
+            max-width: 1200px;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+            border: 1px solid rgba(255,255,255,0.08);
+            position: relative;
+        }
+
+        video {
+            width: 100%;
+            display: block;
+            min-height: 400px;
+            background: #000;
+        }
+
+        /* ── Overlay de loading/erro ── */
+        .overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.85);
+            gap: 20px;
+            transition: opacity 0.4s;
+        }
+        .overlay.hidden { opacity: 0; pointer-events: none; }
+
+        .overlay-icon  { font-size: 56px; }
+        .overlay-title { font-size: 20px; font-weight: 700; }
+        .overlay-msg   { font-size: 13px; color: #aaa; text-align: center; max-width: 420px; line-height: 1.6; }
+
+        .spinner-ring {
+            width: 56px; height: 56px;
+            border: 5px solid rgba(255,255,255,0.1);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.9s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── Barra de controles customizados ── */
+        .controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 20px;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px);
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .controls-left, .controls-right {
+            display: flex; align-items: center; gap: 10px;
+        }
+
+        .ctrl-btn {
+            padding: 8px 16px;
+            border: none; border-radius: 8px;
+            cursor: pointer; font-size: 13px; font-weight: 600;
+            display: flex; align-items: center; gap: 7px;
+            transition: all 0.25s;
+        }
+        .ctrl-btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+        .ctrl-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(102,126,234,0.4); }
+
+        .ctrl-btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+        .ctrl-btn-secondary:hover { background: rgba(255,255,255,0.18); }
+
+        .ctrl-btn-danger {
+            background: rgba(245,87,108,0.15);
+            color: #f5576c;
+            border: 1px solid rgba(245,87,108,0.3);
+        }
+        .ctrl-btn-danger:hover { background: rgba(245,87,108,0.25); }
+
+        /* Volume */
+        .volume-ctrl { display: flex; align-items: center; gap: 8px; }
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 90px; height: 4px;
+            border-radius: 2px;
+            background: rgba(255,255,255,0.2);
+            outline: none; cursor: pointer;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px; height: 14px; border-radius: 50%;
+            background: var(--primary); cursor: pointer;
+        }
+
+        /* ── Info bar ── */
+        .info-bar {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            gap: 12px;
+            margin-top: 14px;
+            flex-wrap: wrap;
+        }
+
+        .info-card {
+            flex: 1;
+            min-width: 160px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            padding: 14px 18px;
+            backdrop-filter: blur(8px);
+        }
+        .info-card-label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
+        .info-card-value { font-size: 15px; font-weight: 600; color: white; }
+
+        /* ── Log de erros ── */
+        .log-box {
+            width: 100%;
+            max-width: 1200px;
+            margin-top: 14px;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 10px;
+            padding: 14px 18px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: #888;
+            max-height: 120px;
+            overflow-y: auto;
+            display: none;
+        }
+        .log-box.show { display: block; }
+        .log-entry { margin-bottom: 4px; }
+        .log-entry.ok   { color: #4facfe; }
+        .log-entry.warn { color: #ffa726; }
+        .log-entry.err  { color: #f5576c; }
+
+        @media (max-width: 600px) {
+            .header { flex-direction: column; gap: 12px; }
+            .controls { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Cabeçalho -->
+    <div class="header">
+        <div class="header-left">
+            <span class="header-logo">📡</span>
+            <div>
+                <div class="header-title">Sinótico — SIGMA-MRO</div>
+                <div class="header-sub">Monitoramento em tempo real • VLT Carioca</div>
+            </div>
+        </div>
+        <div class="status-badge connecting" id="statusBadge">
+            <div class="pulse"></div>
+            <span id="statusText">Conectando...</span>
+        </div>
+    </div>
+
+    <!-- Player -->
+    <div class="player-wrapper">
+
+        <!-- Overlay de loading/erro -->
+        <div class="overlay" id="overlay">
+            <div class="spinner-ring" id="overlaySpinner"></div>
+            <div class="overlay-icon" id="overlayIcon" style="display:none;">⚠️</div>
+            <div class="overlay-title" id="overlayTitle">Conectando ao Stream</div>
+            <div class="overlay-msg"  id="overlayMsg">Aguarde, carregando o sinótico...</div>
+            <button class="ctrl-btn ctrl-btn-primary" id="overlayRetryBtn" style="display:none;" onclick="iniciarPlayer()">
+                <i class="fas fa-redo"></i> Tentar novamente
+            </button>
+        </div>
+
+        <video id="videoPlayer" controls playsinline></video>
+
+        <!-- Controles -->
+        <div class="controls">
+            <div class="controls-left">
+                <button class="ctrl-btn ctrl-btn-primary" onclick="irParaAoVivo()">
+                    <i class="fas fa-circle" style="color:#f5576c;font-size:10px;"></i> AO VIVO
+                </button>
+                <button class="ctrl-btn ctrl-btn-secondary" onclick="toggleMute()">
+                    <i class="fas fa-volume-up" id="muteIcon"></i>
+                </button>
+                <div class="volume-ctrl">
+                    <input type="range" id="volumeRange" min="0" max="1" step="0.05" value="1" oninput="setVolume(this.value)">
+                </div>
+            </div>
+            <div class="controls-right">
+                <button class="ctrl-btn ctrl-btn-secondary" onclick="toggleLog()">
+                    <i class="fas fa-terminal"></i> Log
+                </button>
+                <button class="ctrl-btn ctrl-btn-secondary" onclick="toggleFullscreen()">
+                    <i class="fas fa-expand"></i> Fullscreen
+                </button>
+                <button class="ctrl-btn ctrl-btn-danger" onclick="iniciarPlayer()">
+                    <i class="fas fa-redo"></i> Reconectar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Info cards -->
+    <div class="info-bar">
+        <div class="info-card">
+            <div class="info-card-label">Fonte do Stream</div>
+            <div class="info-card-value" style="font-size:12px; word-break:break-all;">10.201.1.34/httplive/stream.m3u8</div>
+        </div>
+        <div class="info-card">
+            <div class="info-card-label">Qualidade</div>
+            <div class="info-card-value" id="infoQuality">—</div>
+        </div>
+        <div class="info-card">
+            <div class="info-card-label">Buffer</div>
+            <div class="info-card-value" id="infoBuffer">—</div>
+        </div>
+        <div class="info-card">
+            <div class="info-card-label">Reconexões</div>
+            <div class="info-card-value" id="infoRetries">0</div>
+        </div>
+    </div>
+
+    <!-- Log -->
+    <div class="log-box" id="logBox"></div>
+
+    <script>
+    // ─────────────────────────────────────────────────────────────
+    // CONFIGURAÇÃO
+    // ─────────────────────────────────────────────────────────────
+    const STREAM_URL = 'http://10.201.1.34/httplive/stream.m3u8';
+    const MAX_RETRIES = 10;
+
+    let hls          = null;
+    let retryCount   = 0;
+    let retryTimer   = null;
+    let logVisible   = false;
+
+    const video        = document.getElementById('videoPlayer');
+    const overlay      = document.getElementById('overlay');
+    const overlaySpinner = document.getElementById('overlaySpinner');
+    const overlayIcon  = document.getElementById('overlayIcon');
+    const overlayTitle = document.getElementById('overlayTitle');
+    const overlayMsg   = document.getElementById('overlayMsg');
+    const overlayRetryBtn = document.getElementById('overlayRetryBtn');
+    const statusBadge  = document.getElementById('statusBadge');
+    const statusText   = document.getElementById('statusText');
+    const logBox       = document.getElementById('logBox');
+
+    // ─────────────────────────────────────────────────────────────
+    // LOG
+    // ─────────────────────────────────────────────────────────────
+    function log(msg, type = 'ok') {
+        const ts   = new Date().toLocaleTimeString('pt-BR');
+        const div  = document.createElement('div');
+        div.className = 'log-entry ' + type;
+        div.textContent = `[${ts}] ${msg}`;
+        logBox.appendChild(div);
+        logBox.scrollTop = logBox.scrollHeight;
+        console.log(`[SIGMA-SINOTICO] ${msg}`);
+    }
+
+    function toggleLog() {
+        logVisible = !logVisible;
+        logBox.classList.toggle('show', logVisible);
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // STATUS BADGE
+    // ─────────────────────────────────────────────────────────────
+    function setStatus(state, text) {
+        statusBadge.className = 'status-badge ' + state;
+        statusText.textContent = text;
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // OVERLAY
+    // ─────────────────────────────────────────────────────────────
+    function showOverlay(title, msg, isError = false) {
+        overlay.classList.remove('hidden');
+        overlaySpinner.style.display = isError ? 'none' : 'block';
+        overlayIcon.style.display    = isError ? 'block' : 'none';
+        overlayTitle.textContent = title;
+        overlayMsg.textContent   = msg;
+        overlayRetryBtn.style.display = isError ? 'inline-flex' : 'none';
+    }
+
+    function hideOverlay() {
+        overlay.classList.add('hidden');
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // INICIALIZAR PLAYER
+    // ─────────────────────────────────────────────────────────────
+    function iniciarPlayer() {
+        // Limpa instância anterior
+        if (hls) {
+            hls.destroy();
+            hls = null;
+        }
+        if (retryTimer) {
+            clearTimeout(retryTimer);
+            retryTimer = null;
+        }
+
+        showOverlay('Conectando ao Stream', 'Aguarde, carregando o sinótico...');
+        setStatus('connecting', 'Conectando...');
+        log('Iniciando player HLS...', 'ok');
+
+        // ── Caso 1: HLS.js suportado (Chrome, Firefox, Edge) ──
+        if (Hls.isSupported()) {
+            hls = new Hls({
+                // Configurações para stream ao vivo e recuperação de erros
+                enableWorker: false,          // evita problemas de CORS com worker
+                lowLatencyMode: false,        // stream não é LL-HLS
+                liveSyncDurationCount: 3,     // quantos segmentos de buffer ao vivo
+                liveMaxLatencyDurationCount: 10,
+                maxBufferLength: 30,
+                maxMaxBufferLength: 60,
+                fragLoadingTimeOut: 20000,    // 20s antes de timeout de fragmento
+                manifestLoadingTimeOut: 15000,
+                levelLoadingTimeOut: 15000,
+                fragLoadingMaxRetry: 6,
+                manifestLoadingMaxRetry: 6,
+                levelLoadingMaxRetry: 6,
+                fragLoadingRetryDelay: 1000,
+                manifestLoadingRetryDelay: 1000,
+                xhrSetup: function(xhr) {
+                    // sem credenciais — stream interno
+                    xhr.withCredentials = false;
+                }
+            });
+
+            hls.loadSource(STREAM_URL);
+            hls.attachMedia(video);
+
+            // ── Eventos de sucesso ──
+            hls.on(Hls.Events.MANIFEST_PARSED, function(event, data) {
+                log(`Manifest carregado — ${data.levels.length} nível(eis) de qualidade`, 'ok');
+                setStatus('live', '🔴 AO VIVO');
+                hideOverlay();
+                document.getElementById('infoQuality').textContent =
+                    data.levels[0] ? `${data.levels[0].width}x${data.levels[0].height}` : 'Auto';
+                video.play().catch(err => log('Autoplay bloqueado: clique em play.', 'warn'));
+            });
+
+            hls.on(Hls.Events.FRAG_LOADED, function() {
+                // Atualiza buffer a cada fragmento carregado
+                const buf = video.buffered;
+                if (buf.length > 0) {
+                    const bufSecs = (buf.end(buf.length - 1) - video.currentTime).toFixed(1);
+                    document.getElementById('infoBuffer').textContent = bufSecs + 's';
+                }
+            });
+
+            // ── Tratamento de erros com recuperação automática ──
+            hls.on(Hls.Events.ERROR, function(event, data) {
+                log(`Erro HLS [${data.type}] ${data.details}`, 'warn');
+
+                if (data.fatal) {
+                    switch (data.type) {
+
+                        // Erro de rede — tenta reconectar automaticamente
+                        case Hls.ErrorTypes.NETWORK_ERROR:
+                            log('Erro fatal de rede — tentando recuperar...', 'warn');
+                            tentarRecuperacao();
+                            break;
+
+                        // fragParsingError e afins — destrói e reinicia
+                        case Hls.ErrorTypes.MEDIA_ERROR:
+                            log('Erro de mídia — executando recoverMediaError()...', 'warn');
+                            hls.recoverMediaError();
+                            // Se continuar falhando, reinicia completamente
+                            retryTimer = setTimeout(() => {
+                                if (hls) {
+                                    log('Reiniciando player completo...', 'warn');
+                                    tentarRecuperacao();
+                                }
+                            }, 3000);
+                            break;
+
+                        default:
+                            log('Erro fatal desconhecido: ' + data.details, 'err');
+                            tentarRecuperacao();
+                    }
+                } else {
+                    // Erro não-fatal (fragParsingError frequentemente é não-fatal)
+                    // HLS.js já tenta o próximo fragmento automaticamente
+                    if (data.details === Hls.ErrorDetails.FRAG_PARSING_ERROR) {
+                        log('fragParsingError (não-fatal) — HLS.js vai tentar próximo fragmento', 'warn');
+                    }
+                }
+            });
+
+        // ── Caso 2: Safari — suporte nativo a HLS ──
+        } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+            log('Safari detectado — usando player nativo HLS', 'ok');
+            video.src = STREAM_URL;
+            video.addEventListener('loadedmetadata', function() {
+                hideOverlay();
+                setStatus('live', '🔴 AO VIVO');
+                video.play();
+            });
+            video.addEventListener('error', function() {
+                log('Erro no player nativo', 'err');
+                tentarRecuperacao();
+            });
+
+        } else {
+            // Navegador sem suporte
+            showOverlay('Navegador não suportado', 'Use Chrome, Firefox, Edge ou Safari para visualizar o sinótico.', true);
+            setStatus('error', 'Sem suporte');
+            log('Navegador sem suporte a HLS', 'err');
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // RECUPERAÇÃO AUTOMÁTICA
+    // ─────────────────────────────────────────────────────────────
+    function tentarRecuperacao() {
+        if (hls) { hls.destroy(); hls = null; }
+
+        retryCount++;
+        document.getElementById('infoRetries').textContent = retryCount;
+
+        if (retryCount <= MAX_RETRIES) {
+            const delay = Math.min(retryCount * 2000, 15000); // backoff até 15s
+            log(`Reconectando em ${delay/1000}s... (tentativa ${retryCount}/${MAX_RETRIES})`, 'warn');
+            setStatus('connecting', `Reconectando (${retryCount}/${MAX_RETRIES})...`);
+            showOverlay(
+                'Reconectando...',
+                `Tentativa ${retryCount} de ${MAX_RETRIES}. Aguarde ${delay/1000}s...`
+            );
+            retryTimer = setTimeout(iniciarPlayer, delay);
+        } else {
+            log('Número máximo de tentativas atingido.', 'err');
+            setStatus('error', 'Sem sinal');
+            showOverlay(
+                'Stream indisponível',
+                'Não foi possível conectar ao sinótico. Verifique se você está na rede interna do VLT e tente novamente.',
+                true
+            );
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // CONTROLES
+    // ─────────────────────────────────────────────────────────────
+    function irParaAoVivo() {
+        if (hls) {
+            hls.startLoad();
+            video.currentTime = video.duration - 1;
+            video.play();
+            log('Voltando ao vivo', 'ok');
+        }
+    }
+
+    function toggleMute() {
+        video.muted = !video.muted;
+        document.getElementById('muteIcon').className =
+            video.muted ? 'fas fa-volume-mute' : 'fas fa-volume-up';
+    }
+
+    function setVolume(val) {
+        video.volume = val;
+        video.muted  = val == 0;
+        document.getElementById('muteIcon').className =
+            val == 0 ? 'fas fa-volume-mute' : 'fas fa-volume-up';
+    }
+
+    function toggleFullscreen() {
+        const wrapper = document.querySelector('.player-wrapper');
+        if (!document.fullscreenElement) {
+            wrapper.requestFullscreen().catch(err => log('Fullscreen negado: ' + err, 'warn'));
+        } else {
+            document.exitFullscreen();
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // INICIA
+    // ─────────────────────────────────────────────────────────────
+    iniciarPlayer();
+    </script>
+</body>
+</html>
