@@ -742,32 +742,38 @@
                         </div>
                     </div>
 
-<!-- SINÓTICO -->
-<div class="page" id="page-avisos">
+<!-- ================================================
+     SINÓTICO — substitui o bloco antigo no dashboard
+     ================================================ -->
+<div class="page" id="page-sinotico">
     <div class="page-header">
         <h1>📡 Sinótico</h1>
-        <p>Monitoramento em tempo real do sistema VLT.</p>
+        <p>Monitoramento em tempo real do sistema VLT • Rede interna: 10.201.1.34</p>
     </div>
-    <div style="background: linear-gradient(135deg, #1a1a2e, #16213e); border-radius: 12px; padding: 40px; text-align: center; color: #fff;">
-        <div style="font-size: 60px; margin-bottom: 20px;">📡</div>
-        <h2 style="margin-bottom: 10px; color: #fff;">Stream do Sinótico</h2>
-        <p style="color: #aaa; margin-bottom: 30px; max-width: 500px; margin-left: auto; margin-right: auto;">
-            O sinótico roda em tempo real via rede interna. Clique no botão abaixo para abrir o player dedicado.
-        </p>
-        <a href="http://10.201.1.34/httplive/stream.m3u8"
-           target="_blank" class="btn-primary"
-           style="font-size: 16px; padding: 12px 30px; margin: 5px;">
-            <i class="fas fa-play-circle"></i> Abrir Stream Direto
-        </a>
-        <button class="btn-primary"
-                onclick="window.open('sinotico.html','_blank')"
-                style="font-size: 16px; padding: 12px 30px; margin: 5px; background: #2d6a4f;">
-            <i class="fas fa-tv"></i> Abrir Player SIGMA
+
+    <div style="margin-bottom: 16px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+        <button class="btn-primary" onclick="document.getElementById('sinotico-frame').src = document.getElementById('sinotico-frame').src">
+            <i class="fas fa-redo"></i> Recarregar Player
         </button>
-        <p style="color: #666; font-size: 12px; margin-top: 20px;">
-            ⚠️ Disponível apenas na rede interna do VLT • IP: 10.201.1.34
-        </p>
+        <a href="sinotico.html" target="_blank" class="btn-primary" style="background: linear-gradient(135deg,#2d6a4f,#40916c);">
+            <i class="fas fa-external-link-alt"></i> Abrir em Tela Cheia
+        </a>
     </div>
+
+    <!-- Player embutido via iframe apontando para sinotico.html -->
+    <div style="position: relative; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.3); background: #000; min-height: 520px;">
+        <iframe
+            id="sinotico-frame"
+            src="sinotico.html"
+            style="width: 100%; height: 600px; border: none; display: block;"
+            allowfullscreen
+        ></iframe>
+    </div>
+
+    <p style="margin-top: 12px; font-size: 12px; color: #7f8c8d; text-align: center;">
+        ⚠️ Disponível apenas na rede interna do VLT &nbsp;•&nbsp;
+        Se o stream não carregar, verifique a conexão com o IP 10.201.1.34
+    </p>
 </div>
 
                     <!-- DASHBOARD -->
